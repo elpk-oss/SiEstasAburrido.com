@@ -23,6 +23,24 @@
         }
         h1 { margin-bottom: 13px; font-size: 2.1em; letter-spacing: 1px; }
         h2 { margin-bottom: 13px; color: #fff; }
+        .update-ok {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #2ecc40;
+            background: #181;
+            border-radius: 7px;
+            padding: 6px 14px 6px 8px;
+            font-size: 1em;
+            margin: 0 auto 18px auto;
+            width: max-content;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .update-ok svg {
+            vertical-align: middle;
+        }
         form { display: flex; flex-direction: column; gap: 10px; }
         input[type="text"], input[type="password"] {
             padding: 10px; border-radius: 7px; border: none; background: #333; color: #FFD600; font-size: 1em;
@@ -40,6 +58,16 @@
             background: #222; margin-top: 24px; padding: 13px 7px; border-radius: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
         #user-panel h3 { margin-top: 0; color: #FFD600; margin-bottom: 8px; }
+        #mod-panel {
+            background: #222; margin-top: 24px; padding: 13px 7px; border-radius: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-bottom: 15px;
+        }
+        #mod-panel h3 { margin-top: 0; color: #FFD600; margin-bottom: 8px; }
+        #users-table { width: 100%; margin-top: 8px; border-collapse: collapse; color: #fff; font-size: 0.96em; }
+        #users-table th, #users-table td { padding: 4px 4px; border-bottom: 1px solid #444; }
+        #users-table th { background: #111; color: #FFD600; }
+        #users-table tr:last-child td { border-bottom: none; }
+        .mod-btn, .action-btn { padding: 3px 10px; border-radius: 5px; border: none; background: #FFD600; color: #111; cursor: pointer; font-size: 0.93em; margin: 0 2px 3px 2px; transition: background 0.2s; }
+        .mod-btn[disabled], .action-btn[disabled] { background: #666; color: #ccc; cursor: default; }
         #chat-general {
             background: #191919; margin-top: 22px; padding: 13px 7px 10px 7px; border-radius: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
             max-width: 99vw; margin-left:auto; margin-right:auto;
@@ -51,6 +79,65 @@
         .msg-content { color: #fff; }
         .chat-form { display: flex; gap: 5px; margin-top: 5px; }
         .chat-form input { flex: 1 1 auto; font-size: 1em; }
+        .role-tag {
+            background: #FFD600;
+            color: #111;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.91em;
+            padding: 2px 6px;
+            margin-left: 6px;
+        }
+        #community-panel {
+            background: #181818;
+            border-radius: 7px;
+            padding: 10px;
+            margin-top: 18px;
+        }
+        #community-panel h4 {
+            margin: 6px 0 7px 0;
+            color: #FFD600;
+        }
+        .member-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1em;
+            padding: 3px 1px;
+            border-bottom: 1px solid #292929;
+        }
+        .member-row:last-child {
+            border-bottom: none;
+        }
+        .success-msg { color: #5ef05e; font-size: 0.99em; margin: 7px 0 0 0; }
+        .modal-bg {
+            position: fixed;
+            z-index: 99;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            background: #222;
+            color: #FFD600;
+            padding: 24px 18px 14px 18px;
+            border-radius: 9px;
+            min-width: 260px;
+            max-width: 93vw;
+            box-shadow: 0 2px 12px #000;
+            position: relative;
+        }
+        .modal .close {
+            position: absolute;
+            right: 13px; top: 11px;
+            color: #FFD600;
+            font-weight: bold;
+            font-size: 1.3em;
+            cursor: pointer;
+        }
         @media (max-width: 500px) {
             .container { max-width: 99vw; }
         }
@@ -60,6 +147,10 @@
     <div class="container" id="main-container">
         <h1>Peñarol Community</h1>
         <div id="login-register">
+            <div class="update-ok" id="update-ok">
+                <svg width="22" height="22" fill="none"><circle cx="11" cy="11" r="11" fill="#2ecc40"/><path d="M7 11.5l3 3 5-6.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Actualizado
+            </div>
             <div id="login-form">
                 <h2>Iniciar Sesión</h2>
                 <form id="form-login">
@@ -84,9 +175,34 @@
         <div id="welcome" style="display:none;">
             <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
             <button id="logout">Cerrar sesión</button>
-            <div id="user-panel">
+            <div id="mod-panel" style="display:none;">
+                <h3>Panel de Moderación</h3>
+                <button class="btn" id="btn-bot-invite">🔗 Agregar mi bot a tu server</button>
+                <div style="margin-top:10px;overflow-x:auto;">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody"></tbody>
+                    </table>
+                </div>
+                <div id="success-msg-mod" class="success-msg"></div>
+            </div>
+            <div id="user-panel" style="display:none;">
                 <h3>Tu Perfil</h3>
                 <div><b>Usuario:</b> <span id="perfil-user"></span></div>
+                <div><b>Rol:</b> <span id="perfil-rol"></span></div>
+                <button class="btn" id="btn-discord-invite">🔗 Unirse a Discord</button>
+                <button class="btn" id="btn-edit-pass">Editar contraseña</button>
+                <div style="margin:8px 0 0 0;"><b>Miembros registrados:</b> <span id="member-count"></span></div>
+            </div>
+            <div id="community-panel">
+                <h4>Miembros Destacados</h4>
+                <div id="members-list"></div>
             </div>
             <div id="chat-general">
                 <h3>Chat General</h3>
@@ -98,12 +214,17 @@
             </div>
         </div>
     </div>
+    <div id="modal-bg" style="display:none;"></div>
     <script>
-        // Usuarios y mensajes en memoria (se pierden al recargar)
-        let users = [];
+        // ===== DATOS DE INICIO: SOLO EL ADMIN, NINGÚN USUARIO FICTICIO =====
+        let users = [
+            { username: "ElPk", password: "Peñarol2025", isMod: true, silenced: false, banned: false }
+        ];
+
+        // ===== CHATS (en memoria JS solo para demo) =====
         let chatGeneral = [];
 
-        // Elementos
+        // ======= Elementos =======
         const loginForm = document.getElementById("form-login");
         const registerForm = document.getElementById("form-register");
         const showRegister = document.getElementById("show-register");
@@ -115,13 +236,26 @@
         const welcomeDiv = document.getElementById("welcome");
         const userNameSpan = document.getElementById("user-name");
         const logoutBtn = document.getElementById("logout");
+        const modPanel = document.getElementById("mod-panel");
+        const usersTbody = document.getElementById("users-tbody");
+        const userPanel = document.getElementById("user-panel");
         const perfilUser = document.getElementById("perfil-user");
+        const perfilRol = document.getElementById("perfil-rol");
+        const btnBotInvite = document.getElementById("btn-bot-invite");
+        const btnDiscordInvite = document.getElementById("btn-discord-invite");
+        const btnEditPass = document.getElementById("btn-edit-pass");
+        const memberCount = document.getElementById("member-count");
+        const membersList = document.getElementById("members-list");
+        const modalBg = document.getElementById("modal-bg");
+        const successMsgMod = document.getElementById("success-msg-mod");
+        const updateOk = document.getElementById("update-ok");
 
         // Chat
         const chatGeneralMessages = document.getElementById("chat-messages-general");
         const chatGeneralForm = document.getElementById("chat-form-general");
         const chatGeneralInput = document.getElementById("chat-input-general");
 
+        // Variables de sesión
         let currentUser = null;
 
         // Mostrar registro/login
@@ -130,12 +264,14 @@
             loginDiv.style.display = "none";
             registerDiv.style.display = "block";
             loginError.textContent = "";
+            updateOk.style.display = "flex";
         };
         showLogin.onclick = (e) => {
             e.preventDefault();
             registerDiv.style.display = "none";
             loginDiv.style.display = "block";
             registerError.textContent = "";
+            updateOk.style.display = "flex";
         };
 
         // Login
@@ -143,15 +279,19 @@
             e.preventDefault();
             const username = document.getElementById("login-username").value.trim();
             const password = document.getElementById("login-password").value;
-            const user = users.find(u => u.username === username && u.password === password);
+            const user = users.find(u => u.username === username && u.password === password && !u.banned);
             if (user) {
                 loginDiv.style.display = "none";
                 welcomeDiv.style.display = "block";
                 userNameSpan.textContent = user.username;
                 perfilUser.textContent = user.username;
+                perfilRol.innerHTML = user.isMod ? '<span class="role-tag">MOD</span>' : "Usuario";
                 loginError.textContent = "";
                 currentUser = user;
+                mostrarPaneles();
                 renderChatGeneral();
+            } else if(users.find(u => u.username === username && u.banned)) {
+                loginError.textContent = "Este usuario está baneado.";
             } else {
                 loginError.textContent = "Usuario o contraseña incorrectos.";
             }
@@ -170,11 +310,16 @@
                 registerError.textContent = "Ese usuario ya existe.";
                 return;
             }
-            users.push({ username, password });
+            if (username === "ElPk") {
+                registerError.textContent = "No puedes registrar ese usuario.";
+                return;
+            }
+            users.push({ username, password, isMod: false, silenced: false, banned: false });
             registerError.textContent = "";
             registerDiv.style.display = "none";
             loginDiv.style.display = "block";
             loginError.textContent = "Usuario registrado. Ahora puedes entrar.";
+            updateOk.style.display = "flex";
         };
 
         // Logout
@@ -183,14 +328,204 @@
             loginDiv.style.display = "block";
             loginForm.reset();
             registerForm.reset();
+            modPanel.style.display = "none";
+            userPanel.style.display = "none";
+            successMsgMod.textContent = "";
             currentUser = null;
+            updateOk.style.display = "flex";
         };
 
-        // Chat general
+        function mostrarPaneles() {
+            memberCount.textContent = users.filter(u => !u.banned).length;
+            renderCommunity();
+            if (currentUser && currentUser.isMod) {
+                modPanel.style.display = "block";
+                userPanel.style.display = "none";
+                renderUsuarios();
+            } else {
+                modPanel.style.display = "none";
+                userPanel.style.display = "block";
+            }
+        }
+
+        // Panel de usuarios (mod)
+        function renderUsuarios() {
+            usersTbody.innerHTML = "";
+            users.forEach((u, idx) => {
+                if(u.banned) return; // no mostrar baneados
+                const tr = document.createElement("tr");
+                // Usuario
+                const tdUser = document.createElement("td");
+                tdUser.textContent = u.username === currentUser.username ? u.username + " (tú)" : u.username;
+                tr.appendChild(tdUser);
+
+                // Rol
+                const tdRol = document.createElement("td");
+                tdRol.innerHTML = u.isMod ? '<span class="role-tag">MOD</span>' : "Usuario";
+                tr.appendChild(tdRol);
+
+                // Acciones
+                const tdAcc = document.createElement("td");
+                if (u.username !== currentUser.username && u.username !== "ElPk") {
+                    // Eliminar
+                    const btnDel = document.createElement("button");
+                    btnDel.className = "mod-btn";
+                    btnDel.textContent = "Eliminar";
+                    btnDel.onclick = () => eliminarUsuario(idx);
+                    tdAcc.appendChild(btnDel);
+
+                    // Botón promover/remover moderador
+                    const btnMod = document.createElement("button");
+                    btnMod.className = "mod-btn";
+                    if (u.isMod) {
+                        btnMod.textContent = "Remover Mod";
+                        btnMod.onclick = () => setModerador(idx, false);
+                    } else {
+                        btnMod.textContent = "Hacer Mod";
+                        btnMod.onclick = () => setModerador(idx, true);
+                    }
+                    tdAcc.appendChild(btnMod);
+
+                    // Silenciar
+                    const btnSilenciar = document.createElement("button");
+                    btnSilenciar.className = "mod-btn";
+                    btnSilenciar.textContent = u.silenced ? "Desilenciar" : "Silenciar";
+                    btnSilenciar.onclick = () => silenciarUsuario(idx, !u.silenced);
+                    tdAcc.appendChild(btnSilenciar);
+
+                    // Banear
+                    const btnBanear = document.createElement("button");
+                    btnBanear.className = "mod-btn";
+                    btnBanear.textContent = "Banear";
+                    btnBanear.onclick = () => banearUsuario(idx);
+                    tdAcc.appendChild(btnBanear);
+
+                } else if(u.username === "ElPk") {
+                    const span = document.createElement("span");
+                    span.textContent = "—";
+                    tdAcc.appendChild(span);
+                } else {
+                    const span = document.createElement("span");
+                    span.textContent = "(tú)";
+                    tdAcc.appendChild(span);
+                }
+                tr.appendChild(tdAcc);
+
+                usersTbody.appendChild(tr);
+            });
+        }
+        function eliminarUsuario(idx) {
+            if (users[idx].username === "ElPk") {
+                alert("No puedes eliminar el usuario principal.");
+                return;
+            }
+            if (confirm(`¿Eliminar a ${users[idx].username}?`)) {
+                users.splice(idx, 1);
+                successMsgMod.textContent = "Usuario eliminado.";
+                renderUsuarios();
+                memberCount.textContent = users.filter(u => !u.banned).length;
+                renderCommunity();
+            }
+        }
+        function setModerador(idx, status) {
+            if (users[idx].username === "ElPk") {
+                alert("No puedes quitarte permisos a ti mismo.");
+                return;
+            }
+            users[idx].isMod = status;
+            renderUsuarios();
+            renderCommunity();
+            successMsgMod.textContent = status ? "Usuario promovido a Mod." : "Permiso de Mod removido.";
+        }
+        function silenciarUsuario(idx, silenciar) {
+            users[idx].silenced = silenciar;
+            renderUsuarios();
+            renderCommunity();
+            successMsgMod.textContent = silenciar ? "Usuario silenciado." : "Usuario desilenciado.";
+        }
+        function banearUsuario(idx) {
+            if (confirm(`¿Banear a ${users[idx].username}?`)) {
+                users[idx].banned = true;
+                renderUsuarios();
+                memberCount.textContent = users.filter(u => !u.banned).length;
+                renderCommunity();
+                successMsgMod.textContent = "Usuario baneado.";
+            }
+        }
+
+        // Panel usuario normal
+        // No cambios, ya lo muestra el login
+
+        // Comunidad
+        function renderCommunity() {
+            const destacados = users.filter(u => !u.banned)
+                                   .sort((a,b) => b.isMod - a.isMod || a.username.localeCompare(b.username));
+            membersList.innerHTML = "";
+            destacados.forEach(u => {
+                const div = document.createElement("div");
+                div.className = "member-row";
+                div.innerHTML = `<span>${u.username}</span>
+                    <span>${u.isMod ? '<span class="role-tag">MOD</span>' : ""}${u.silenced ? '<span class="role-tag" style="background:#d67;">Silenciado</span>' : ""}</span>`;
+                membersList.appendChild(div);
+            });
+        }
+
+        // Botón "Agregar mi bot"
+        btnBotInvite.onclick = () => {
+            copiarAlPortapapeles("https://discord.com/oauth2/authorize?client_id=BOT_ID&scope=bot", "¡Link del bot copiado! Invítalo a tu servidor si eres admin.");
+        };
+        // Botón Discord
+        btnDiscordInvite.onclick = () => {
+            copiarAlPortapapeles("https://discord.gg/penarolcommunity", "¡Link de Discord copiado! Únete a la comunidad.");
+        };
+        // Editar contraseña
+        btnEditPass.onclick = () => {
+            mostrarModal(`
+                Cambiar contraseña:<br>
+                <input type="password" id="oldpass" placeholder="Contraseña actual" style="margin-top:8px;"><br>
+                <input type="password" id="newpass" placeholder="Nueva contraseña"><br>
+                <button class='btn' id='guardar-pass'>Guardar</button>
+                <div id="pass-msg" class="error"></div>
+            `);
+            document.getElementById("guardar-pass").onclick = () => {
+                let oldp = document.getElementById("oldpass").value, newp = document.getElementById("newpass").value;
+                if(oldp !== currentUser.password) {
+                    document.getElementById("pass-msg").textContent = "Contraseña actual incorrecta.";
+                } else if(!newp) {
+                    document.getElementById("pass-msg").textContent = "Nueva contraseña vacía.";
+                } else {
+                    currentUser.password = newp;
+                    mostrarModal("¡Contraseña cambiada con éxito!", true);
+                }
+            };
+        };
+
+        function copiarAlPortapapeles(texto, msg) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    mostrarModal(msg, true);
+                });
+            } else {
+                mostrarModal("No se pudo copiar. Usa este link: " + texto, true);
+            }
+        }
+
+        function mostrarModal(html, autoclose) {
+            modalBg.innerHTML = `<div class="modal"><span class="close" onclick="cerrarModal()">&times;</span>${html}</div>`;
+            modalBg.style.display = "flex";
+            if(autoclose) setTimeout(cerrarModal, 1700);
+        }
+        function cerrarModal() {
+            modalBg.style.display = "none";
+            modalBg.innerHTML = "";
+        }
+        window.cerrarModal = cerrarModal;
+
+        // CHAT GENERAL
         chatGeneralForm.onsubmit = (e) => {
             e.preventDefault();
             let msg = chatGeneralInput.value.trim();
-            if(msg && currentUser) {
+            if(msg && currentUser && !currentUser.silenced) {
                 chatGeneral.push({ user: currentUser.username, text: msg, hour: getHora() });
                 renderChatGeneral();
                 chatGeneralInput.value = "";
@@ -222,6 +557,17 @@
         registerForm.querySelectorAll("input").forEach(input => {
             input.onkeypress = (e) => { if (e.key === "Enter") registerForm.onsubmit(e); };
         });
+        document.getElementById("register-username").addEventListener("input", (e) => {
+            if (e.target.value === "ElPk") {
+                registerError.textContent = "No puedes registrar ese usuario.";
+            } else {
+                registerError.textContent = "";
+            }
+        });
+
+        // Mostrar el ok de actualización al cargar
+        updateOk.style.display = "flex";
+        setTimeout(() => { updateOk.style.display = "none"; }, 2000);
     </script>
 </body>
 </html>
