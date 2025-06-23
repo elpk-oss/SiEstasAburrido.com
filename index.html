@@ -72,6 +72,54 @@
         #welcome {
             color: #fff;
         }
+        #mod-panel {
+            background: #222;
+            margin-top: 30px;
+            padding: 18px 12px;
+            border-radius: 11px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        #mod-panel h3 {
+            margin-top: 0;
+            color: #FFD600;
+        }
+        #users-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            color: #fff;
+            font-size: 0.96em;
+        }
+        #users-table th, #users-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #444;
+        }
+        #users-table th {
+            background: #111;
+            color: #FFD600;
+        }
+        #users-table tr:last-child td {
+            border-bottom: none;
+        }
+        .mod-btn {
+            padding: 3px 10px;
+            border-radius: 5px;
+            border: none;
+            background: #FFD600;
+            color: #111;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 0 2px;
+        }
+        .mod-btn[disabled] {
+            background: #666;
+            color: #ccc;
+            cursor: default;
+        }
+        @media (max-width: 500px) {
+            .container { max-width: 97vw; }
+            #users-table, #users-table th, #users-table td { font-size: 0.9em; }
+        }
     </style>
 </head>
 <body>
@@ -81,8 +129,8 @@
             <div id="login-form">
                 <h2>Iniciar Sesión</h2>
                 <form id="form-login">
-                    <input type="text" id="login-username" placeholder="Usuario" required>
-                    <input type="password" id="login-password" placeholder="Contraseña" required>
+                    <input type="text" id="login-username" placeholder="Usuario" required autocomplete="username">
+                    <input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
                     <button type="submit">Entrar</button>
                 </form>
                 <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate</a></p>
@@ -103,12 +151,30 @@
             <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
             <p>Ya eres parte de la comunidad.</p>
             <button id="logout">Cerrar sesión</button>
+            <div id="mod-panel" style="display:none;">
+                <h3>Panel de Moderación</h3>
+                <p><b>Usuarios registrados:</b></p>
+                <div style="overflow-x:auto;">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Moderador</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- Usuarios se llenan dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        // Usuarios en memoria (simulado)
+        // Usuarios en memoria (simulación)
         let users = [
-            { username: "admin", password: "Peñarol2025" }
+            { username: "ElPk", password: "Peñarol2025", isMod: true }
         ];
 
         // --- Elementos
@@ -123,6 +189,11 @@
         const welcomeDiv = document.getElementById("welcome");
         const userNameSpan = document.getElementById("user-name");
         const logoutBtn = document.getElementById("logout");
+        const modPanel = document.getElementById("mod-panel");
+        const usersTbody = document.getElementById("users-tbody");
+
+        // Variables de sesión
+        let currentUser = null;
 
         // -- Mostrar registro/login
         showRegister.onclick = (e) => {
@@ -131,7 +202,6 @@
             registerDiv.style.display = "block";
             loginError.textContent = "";
         };
-
         showLogin.onclick = (e) => {
             e.preventDefault();
             registerDiv.style.display = "none";
@@ -150,6 +220,8 @@
                 welcomeDiv.style.display = "block";
                 userNameSpan.textContent = username;
                 loginError.textContent = "";
+                currentUser = user;
+                mostrarPanelModeracion();
             } else {
                 loginError.textContent = "Usuario o contraseña incorrectos.";
             }
@@ -168,7 +240,7 @@
                 registerError.textContent = "Ese usuario ya existe.";
                 return;
             }
-            users.push({ username, password });
+            users.push({ username, password, isMod: false });
             registerError.textContent = "";
             registerDiv.style.display = "none";
             loginDiv.style.display = "block";
@@ -181,15 +253,107 @@
             loginDiv.style.display = "block";
             loginForm.reset();
             registerForm.reset();
+            modPanel.style.display = "none";
+            currentUser = null;
         };
 
-        // Opcional: permitir Enter en login/registro
+        // -- Panel de Moderación
+        function mostrarPanelModeracion() {
+            if (currentUser && currentUser.isMod) {
+                modPanel.style.display = "block";
+                renderUsuarios();
+            } else {
+                modPanel.style.display = "none";
+            }
+        }
+
+        function renderUsuarios() {
+            usersTbody.innerHTML = "";
+            users.forEach((u, idx) => {
+                const tr = document.createElement("tr");
+                // Usuario
+                const tdUser = document.createElement("td");
+                tdUser.textContent = u.username === currentUser.username ? u.username + " (tú)" : u.username;
+                tr.appendChild(tdUser);
+
+                // Moderador
+                const tdMod = document.createElement("td");
+                tdMod.textContent = u.isMod ? "Sí" : "No";
+                tr.appendChild(tdMod);
+
+                // Acciones
+                const tdAcc = document.createElement("td");
+                // No puedes eliminarte ni quitarte permisos a ti mismo
+                if (u.username !== currentUser.username) {
+                    // Botón eliminar
+                    const btnDel = document.createElement("button");
+                    btnDel.className = "mod-btn";
+                    btnDel.textContent = "Eliminar";
+                    btnDel.onclick = () => eliminarUsuario(idx);
+                    tdAcc.appendChild(btnDel);
+
+                    // Botón promover/remover moderador
+                    const btnMod = document.createElement("button");
+                    btnMod.className = "mod-btn";
+                    if (u.isMod) {
+                        btnMod.textContent = "Remover Mod";
+                        btnMod.onclick = () => setModerador(idx, false);
+                    } else {
+                        btnMod.textContent = "Hacer Mod";
+                        btnMod.onclick = () => setModerador(idx, true);
+                    }
+                    tdAcc.appendChild(btnMod);
+                } else {
+                    // No acciones para el propio usuario
+                    const span = document.createElement("span");
+                    span.textContent = "—";
+                    tdAcc.appendChild(span);
+                }
+                tr.appendChild(tdAcc);
+
+                usersTbody.appendChild(tr);
+            });
+        }
+
+        function eliminarUsuario(idx) {
+            if (users[idx].username === "ElPk") {
+                alert("No puedes eliminar el usuario principal.");
+                return;
+            }
+            if (confirm(`¿Eliminar a ${users[idx].username}?`)) {
+                users.splice(idx, 1);
+                renderUsuarios();
+            }
+        }
+
+        function setModerador(idx, status) {
+            if (users[idx].username === "ElPk") {
+                alert("No puedes quitarte permisos a ti mismo.");
+                return;
+            }
+            users[idx].isMod = status;
+            renderUsuarios();
+        }
+
+        // Permitir Enter en login/registro
         loginForm.querySelectorAll("input").forEach(input => {
             input.onkeypress = (e) => { if (e.key === "Enter") loginForm.onsubmit(e); };
         });
         registerForm.querySelectorAll("input").forEach(input => {
             input.onkeypress = (e) => { if (e.key === "Enter") registerForm.onsubmit(e); };
         });
+
+        // Seguridad mínima: evitar registrar usuario "ElPk"
+        document.getElementById("register-username").addEventListener("input", (e) => {
+            if (e.target.value === "ElPk") {
+                registerError.textContent = "No puedes registrar ese usuario.";
+            } else {
+                registerError.textContent = "";
+            }
+        });
+
+        // Mostrar panel si recarga y sigue la sesión (solo memoria)
+        // (no persistencia real)
     </script>
 </body>
 </html>
