@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aventura Carbonera - Peñarol Game</title>
+    <title>Defiende el Escudo Carbonero - Peñarol Game</title>
     <style>
         body {
             margin: 0;
@@ -16,6 +16,7 @@
             font-family: 'Arial', sans-serif;
             color: #fff;
             flex-direction: column;
+            cursor: none; /* Oculta el cursor del sistema para usar la mira personalizada */
         }
 
         h1 {
@@ -28,25 +29,24 @@
             background-color: #444; /* Fondo del "mundo" */
             border: 5px solid #ffcc00; /* Borde amarillo Peñarol */
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            position: relative; /* Para la mira */
         }
 
         #game-info {
             position: absolute;
             top: 20px;
-            left: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: rgba(0,0,0,0.7);
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             z-index: 10;
+            display: flex;
+            gap: 30px;
         }
 
-        #mission-text {
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        #congratulations-screen {
+        #game-over-screen, #win-screen {
             display: none; /* Oculto inicialmente */
             position: absolute;
             top: 0;
@@ -54,7 +54,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
-            color: #ffcc00;
+            color: #fff;
             font-size: 2em;
             text-align: center;
             flex-direction: column;
@@ -65,191 +65,340 @@
             box-sizing: border-box;
         }
 
-        #congratulations-screen h2 {
+        #game-over-screen h2, #win-screen h2 {
             font-size: 3em;
             margin-bottom: 20px;
-            color: #ffcc00;
+            color: #ff0000; /* Rojo para Game Over */
         }
 
-        #congratulations-screen p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            color: #fff;
+        #win-screen h2 {
+            color: #00ff00; /* Verde para Victoria */
+        }
+
+        #game-over-screen button, #win-screen button {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        #game-over-screen button:hover, #win-screen button:hover {
+            background-color: #e6b800;
         }
 
         #peñarol-logo-final {
-            width: 200px;
+            width: 150px;
             height: auto;
             margin-top: 30px;
+        }
+
+        /* Mira personalizada */
+        #crosshair {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            pointer-events: none; /* Permite clics a través de la mira */
+            transform: translate(-50%, -50%); /* Centra la mira en el cursor */
+            z-index: 1; /* Asegura que esté sobre el canvas */
+            box-shadow: 0 0 5px rgba(255,255,255,0.7);
         }
     </style>
 </head>
 <body>
-    <h1>Aventura Carbonera</h1>
+    <h1>Defiende el Escudo Carbonero</h1>
 
     <div id="game-info">
-        <div id="mission-text">Misión: Ve a la zona verde.</div>
-        <div id="mission-counter">Misiones completadas: 0/5</div>
+        <div>Oleada: <span id="wave-display">1</span>/10</div>
+        <div>Enemigos restantes: <span id="enemies-remaining-display">0</span></div>
+        <div>Escudo dañado: <span id="shield-damage-display">0</span>/<span id="shield-limit-display">5</span></div>
+        <div>Puntuación: <span id="score-display">0</span></div>
     </div>
 
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas" width="900" height="600"></canvas>
+    <div id="crosshair"></div> <div id="game-over-screen">
+        <h2>¡Game Over!</h2>
+        <p>El escudo ha caído. Demasiados enemigos llegaron.</p>
+        <p>Puntuación final: <span id="final-score-game-over">0</span></p>
+        <button onclick="restartGame()">Volver a Jugar</button>
+        <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Logo">
+    </div>
 
-    <div id="congratulations-screen">
-        <h2>¡Felicidades, Campeón!</h2>
-        <p>Has completado todas las misiones y demostrado tu pasión Carbonera.</p>
-        <p>¡Ahora es momento de festejar y unirte a la verdadera hinchada!</p>
-        <p>Te invitamos a la **Peñarol Community** para seguir compartiendo nuestra pasión.</p>
+    <div id="win-screen">
+        <h2>¡VICTORIA CARBONERA!</h2>
+        <p>Has defendido el escudo de Peñarol con honor y valentía.</p>
+        <p>Puntuación final: <span id="final-score-win">0</span></p>
+        <p>¡Eres un verdadero campeón! Celebra tu victoria con la comunidad:</p>
         <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Community Logo">
-        <p style="font-size: 1em; margin-top: 20px;">(En una web real, aquí iría un enlace a la comunidad)</p>
+        <p style="font-size: 1em; margin-top: 20px;">(Aquí iría un enlace real a tu comunidad Peñarol)</p>
+        <button onclick="restartGame()">Jugar de Nuevo</button>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const crosshair = document.getElementById('crosshair');
 
-        const missionTextDisplay = document.getElementById('mission-text');
-        const missionCounterDisplay = document.getElementById('mission-counter');
-        const congratulationsScreen = document.getElementById('congratulations-screen');
+        const waveDisplay = document.getElementById('wave-display');
+        const enemiesRemainingDisplay = document.getElementById('enemies-remaining-display');
+        const shieldDamageDisplay = document.getElementById('shield-damage-display');
+        const shieldLimitDisplay = document.getElementById('shield-limit-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const winScreen = document.getElementById('win-screen');
+        const finalScoreGameOver = document.getElementById('final-score-game-over');
+        const finalScoreWin = document.getElementById('final-score-win');
 
-        const player = {
-            x: 50,
-            y: 50,
-            width: 30,
-            height: 30,
-            color: '#000080', // Azul oscuro
-            speed: 5
+        // --- Configuración del Juego ---
+        const GAME_WIDTH = canvas.width;
+        const GAME_HEIGHT = canvas.height;
+        const SHIELD_SIZE = 80;
+        const ENEMY_SIZE = 20;
+        const ENEMY_SPEED_BASE = 0.5; // Velocidad base de los enemigos
+        const MAX_ENEMIES_ON_SCREEN = 200; // Límite de enemigos en pantalla a la vez para rendimiento
+
+        let enemies = [];
+        let enemiesSpawnedThisWave = 0;
+        let enemiesKilledThisWave = 0;
+        let shieldDamage = 0;
+        let currentWave = 1;
+        let score = 0;
+        let gameActive = true;
+        let gameLoopId; // Para el requestAnimationFrame
+
+        const shield = {
+            x: GAME_WIDTH / 2 - SHIELD_SIZE / 2,
+            y: GAME_HEIGHT / 2 - SHIELD_SIZE / 2,
+            width: SHIELD_SIZE,
+            height: SHIELD_SIZE,
+            color: '#ffcc00' // Amarillo Peñarol para el escudo
         };
 
-        let completedMissions = 0;
-        let currentMissionIndex = 0;
-
-        // Definición de las 5 misiones
-        // Cada misión tiene un objetivo (coordenadas x, y) y un mensaje
-        const missions = [
-            { id: 0, targetX: 700, targetY: 500, message: "Misión 1: ¡Llega a la esquina inferior derecha!" },
-            { id: 1, targetX: 100, targetY: 500, message: "Misión 2: ¡Ahora ve a la esquina inferior izquierda!" },
-            { id: 2, targetX: 700, targetY: 100, message: "Misión 3: ¡Sube a la esquina superior derecha!" },
-            { id: 3, targetX: 100, targetY: 100, message: "Misión 4: ¡Y ahora a la esquina superior izquierda!" },
-            { id: 4, targetX: 385, targetY: 285, message: "Misión 5: ¡Dirígete al centro del campo!" }
+        // Definición de las oleadas
+        // totalMobs: total de enemigos a aparecer en la oleada
+        // shieldLimit: cuántos enemigos pueden llegar al escudo antes de perder la oleada
+        const waves = [
+            { totalMobs: 30, shieldLimit: 5 }, // Oleada 1 (más fácil para empezar)
+            { totalMobs: 50, shieldLimit: 4 }, // Oleada 2
+            { totalMobs: 80, shieldLimit: 4 }, // Oleada 3
+            { totalMobs: 120, shieldLimit: 3 }, // Oleada 4
+            { totalMobs: 180, shieldLimit: 3 }, // Oleada 5
+            { totalMobs: 250, shieldLimit: 2 }, // Oleada 6
+            { totalMobs: 350, shieldLimit: 2 }, // Oleada 7
+            { totalMobs: 450, shieldLimit: 1 }, // Oleada 8
+            { totalMobs: 600, shieldLimit: 1 }, // Oleada 9
+            { totalMobs: 800, shieldLimit: 1 }  // Oleada 10 (la más difícil)
         ];
 
-        // Teclas presionadas
-        const keys = {
-            ArrowUp: false,
-            ArrowDown: false,
-            ArrowLeft: false,
-            ArrowRight: false,
-            w: false,
-            s: false,
-            a: false,
-            d: false
-        };
+        // --- Funciones de Dibujo ---
+        function drawShield() {
+            ctx.fillStyle = shield.color;
+            ctx.fillRect(shield.x, shield.y, shield.width, shield.height);
+            ctx.strokeStyle = '#000'; // Borde negro
+            ctx.lineWidth = 2;
+            ctx.strokeRect(shield.x, shield.y, shield.width, shield.height);
+        }
+
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.fillStyle = enemy.color;
+                ctx.fillRect(enemy.x, enemy.y, ENEMY_SIZE, ENEMY_SIZE);
+            });
+        }
 
         // --- Funciones del Juego ---
-
-        function drawPlayer() {
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        function drawMissionTarget() {
-            if (currentMissionIndex < missions.length) {
-                const mission = missions[currentMissionIndex];
-                ctx.fillStyle = 'rgba(0, 255, 0, 0.5)'; // Zona verde transparente
-                ctx.fillRect(mission.targetX - 25, mission.targetY - 25, 50, 50); // Área objetivo
-            }
-        }
-
-        function updatePlayerPosition() {
-            if (keys.ArrowUp || keys.w) player.y -= player.speed;
-            if (keys.ArrowDown || keys.s) player.y += player.speed;
-            if (keys.ArrowLeft || keys.a) player.x -= player.speed;
-            if (keys.ArrowRight || keys.d) player.x += player.speed;
-
-            // Limitar al jugador dentro del canvas
-            if (player.x < 0) player.x = 0;
-            if (player.y < 0) player.y = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
-        }
-
-        function checkMissionCompletion() {
-            if (completedMissions === missions.length) {
-                showCongratulations();
-                return;
+        function spawnEnemy() {
+            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs || enemies.length >= MAX_ENEMIES_ON_SCREEN) {
+                return; // No spawnear más enemigos si se alcanzó el límite de la oleada o de la pantalla
             }
 
-            const currentMission = missions[currentMissionIndex];
-            const targetX = currentMission.targetX;
-            const targetY = currentMission.targetY;
+            let startX, startY;
+            const side = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
 
-            // Simple detección de colisión/proximidad con el objetivo
-            if (player.x < targetX + 25 &&
-                player.x + player.width > targetX - 25 &&
-                player.y < targetY + 25 &&
-                player.y + player.height > targetY - 25) {
+            if (side === 0) { // Top
+                startX = Math.random() * GAME_WIDTH;
+                startY = -ENEMY_SIZE;
+            } else if (side === 1) { // Right
+                startX = GAME_WIDTH;
+                startY = Math.random() * GAME_HEIGHT;
+            } else if (side === 2) { // Bottom
+                startX = Math.random() * GAME_WIDTH;
+                startY = GAME_HEIGHT;
+            } else { // Left
+                startX = -ENEMY_SIZE;
+                startY = Math.random() * GAME_HEIGHT;
+            }
 
-                completedMissions++;
-                currentMissionIndex++;
-                missionCounterDisplay.textContent = `Misiones completadas: ${completedMissions}/${missions.length}`;
+            // Calcular dirección hacia el centro del escudo
+            const targetX = shield.x + shield.width / 2;
+            const targetY = shield.y + shield.height / 2;
+            const angle = Math.atan2(targetY - startY, targetX - startX);
 
-                if (completedMissions < missions.length) {
-                    missionTextDisplay.textContent = missions[currentMissionIndex].message;
-                    // Mueve al jugador a una posición inicial para la siguiente misión
-                    player.x = 50;
-                    player.y = 50;
-                } else {
-                    showCongratulations();
+            enemies.push({
+                x: startX,
+                y: startY,
+                speedX: Math.cos(angle) * (ENEMY_SPEED_BASE + (currentWave * 0.1)), // Velocidad aumenta por oleada
+                speedY: Math.sin(angle) * (ENEMY_SPEED_BASE + (currentWave * 0.1)),
+                color: '#800000', // Rojo oscuro para enemigos
+                health: 1 // Simple, un clic los mata
+            });
+            enemiesSpawnedThisWave++;
+        }
+
+        let spawnInterval;
+        function startSpawning() {
+            // El intervalo de aparición disminuye con cada oleada
+            const spawnRate = Math.max(100, 500 - (currentWave * 40)); // Mínimo 100ms
+            spawnInterval = setInterval(spawnEnemy, spawnRate);
+        }
+
+        function updateEnemies() {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                enemy.x += enemy.speedX;
+                enemy.y += enemy.speedY;
+
+                // Colisión con el escudo
+                if (enemy.x < shield.x + shield.width &&
+                    enemy.x + ENEMY_SIZE > shield.x &&
+                    enemy.y < shield.y + shield.height &&
+                    enemy.y + ENEMY_SIZE > shield.y) {
+                    
+                    shieldDamage++;
+                    updateInfoDisplay();
+                    enemies.splice(i, 1); // Remover enemigo
+                    if (shieldDamage >= waves[currentWave - 1].shieldLimit) {
+                        endGame(false); // Game Over
+                    }
                 }
             }
         }
 
-        function showCongratulations() {
-            congratulationsScreen.style.display = 'flex'; // Muestra la pantalla de felicitación
-            // Detener el bucle del juego
-            cancelAnimationFrame(gameLoopId);
+        function updateInfoDisplay() {
+            waveDisplay.textContent = currentWave;
+            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - enemiesKilledThisWave;
+            shieldDamageDisplay.textContent = shieldDamage;
+            shieldLimitDisplay.textContent = waves[currentWave - 1].shieldLimit;
+            scoreDisplay.textContent = score;
         }
 
+        function nextWave() {
+            clearInterval(spawnInterval); // Detener el spawn de la oleada actual
+            enemies = []; // Limpiar enemigos restantes
+            enemiesSpawnedThisWave = 0;
+            enemiesKilledThisWave = 0;
+            shieldDamage = 0; // Se resetea el daño del escudo entre oleadas (o no, es una decisión de juego)
+                              // Para este juego, lo resetearemos para que cada oleada tenga su propio límite.
+
+            currentWave++;
+            if (currentWave > waves.length) {
+                endGame(true); // ¡Ganaste!
+                return;
+            }
+            
+            updateInfoDisplay();
+            startSpawning(); // Iniciar spawn para la nueva oleada
+        }
+
+        function endGame(won) {
+            gameActive = false;
+            clearInterval(spawnInterval);
+            cancelAnimationFrame(gameLoopId);
+            if (won) {
+                finalScoreWin.textContent = score;
+                winScreen.style.display = 'flex';
+            } else {
+                finalScoreGameOver.textContent = score;
+                gameOverScreen.style.display = 'flex';
+            }
+        }
+
+        function restartGame() {
+            gameOverScreen.style.display = 'none';
+            winScreen.style.display = 'none';
+            enemies = [];
+            enemiesSpawnedThisWave = 0;
+            enemiesKilledThisWave = 0;
+            shieldDamage = 0;
+            currentWave = 1;
+            score = 0;
+            gameActive = true;
+            updateInfoDisplay();
+            startGameLoop(); // Reiniciar el bucle de juego
+            startSpawning(); // Reiniciar el spawner de enemigos
+        }
+
+        // --- Manejo de Eventos ---
+        canvas.addEventListener('mousemove', (e) => {
+            if (!gameActive) return;
+            const rect = canvas.getBoundingClientRect();
+            crosshair.style.left = `${e.clientX - rect.left}px`;
+            crosshair.style.top = `${e.clientY - rect.top}px`;
+        });
+
+        canvas.addEventListener('click', (e) => {
+            if (!gameActive) return;
+            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                // Detección de colisión simple (clic en el cuadrado del enemigo)
+                if (mouseX >= enemy.x && mouseX <= enemy.x + ENEMY_SIZE &&
+                    mouseY >= enemy.y && mouseY <= enemy.y + ENEMY_SIZE) {
+                    
+                    enemies.splice(i, 1); // Eliminar enemigo
+                    score += 10; // Sumar puntos
+                    enemiesKilledThisWave++;
+                    updateInfoDisplay();
+                    
+                    // Si todos los enemigos de la oleada han sido matados o han llegado al escudo
+                    // Y no hay más enemigos en pantalla que spawneen
+                    if (enemiesKilledThisWave + (waves[currentWave-1].totalMobs - enemiesSpawnedThisWave) === waves[currentWave-1].totalMobs && enemies.length === 0) {
+                        nextWave();
+                    } else if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs) {
+                        // Si todos los mobs (matados + llegados al escudo) son iguales al total de la oleada
+                        nextWave();
+                    }
+                    break; // Solo queremos matar a un enemigo por clic
+                }
+            }
+        });
+
         // --- Bucle Principal del Juego ---
-        let gameLoopId;
-
         function gameLoop() {
-            // 1. Limpiar el canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!gameActive) return;
 
-            // 2. Actualizar la posición del jugador
-            updatePlayerPosition();
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); // Limpiar el canvas
 
-            // 3. Dibujar el objetivo de la misión
-            drawMissionTarget();
+            updateEnemies();
+            drawShield();
+            drawEnemies();
 
-            // 4. Dibujar al jugador
-            drawPlayer();
+            // Verificar si todos los enemigos de la oleada han sido eliminados o llegaron
+            // Esto es crucial para pasar a la siguiente oleada.
+            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs && enemies.length === 0) {
+                nextWave();
+            }
 
-            // 5. Comprobar si la misión actual se ha completado
-            checkMissionCompletion();
-
-            // 6. Volver a llamar al bucle
             gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        // --- Manejo de Eventos de Teclado ---
-        window.addEventListener('keydown', (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = true;
-            }
-        });
+        function startGameLoop() {
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
 
-        window.addEventListener('keyup', (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = false;
-            }
-        });
-
-        // Iniciar el juego al cargar la página
+        // --- Inicio del Juego ---
         window.onload = () => {
-            missionTextDisplay.textContent = missions[0].message; // Establecer el primer mensaje de misión
-            gameLoop();
+            updateInfoDisplay();
+            startGameLoop();
+            startSpawning();
         };
 
     </script>
