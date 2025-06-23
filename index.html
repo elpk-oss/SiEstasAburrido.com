@@ -16,12 +16,7 @@
             font-family: 'Arial', sans-serif;
             color: #fff;
             flex-direction: column;
-            cursor: none; /* Oculta el cursor del sistema por defecto */
-        }
-
-        /* Si el usuario elige mostrar el cursor del sistema, lo restauramos */
-        body.show-system-cursor {
-            cursor: default;
+            cursor: default; /* Usar el cursor del sistema por defecto */
         }
 
         h1 {
@@ -51,7 +46,44 @@
             z-index: 10;
             display: flex;
             gap: 30px;
-            pointer-events: none; /* Ignora clics para que el canvas los reciba */
+        }
+
+        /* Botón de Pausa */
+        #pause-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff; /* Azul para el botón de pausa */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            z-index: 10;
+            display: none; /* Oculto por defecto, se muestra con el canvas */
+        }
+        #pause-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Pantalla de Pausa */
+        #pause-screen {
+            display: none; /* Oculto inicialmente */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
+            color: #ffcc00;
+            font-size: 4em;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99; /* Menor que game-over/win, mayor que canvas */
+            pointer-events: none; /* Permite clics a través de la pantalla de pausa */
         }
 
         /* Pantallas de juego/menú */
@@ -64,7 +96,6 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
             color: #fff;
-            /* Eliminamos font-size general de aquí para controlarlo por elemento */
             text-align: center;
             flex-direction: column;
             justify-content: center;
@@ -75,18 +106,18 @@
         }
 
         .menu-screen h2 {
-            font-size: 2em; /* Ajustado: antes 2.5em */
+            font-size: 2em;
             color: #ffcc00;
-            margin-bottom: 20px; /* Ajustado: antes 30px */
+            margin-bottom: 20px;
         }
         .game-screen h2 {
-            font-size: 2.5em; /* Ajustado: antes 3em */
+            font-size: 2.5em;
             margin-bottom: 20px;
         }
 
         /* Texto de introducción en la pantalla de inicio */
         #start-screen p {
-            font-size: 1.1em; /* Ajustado: antes 1.5em (se hereda de .game-screen si no se redefine) */
+            font-size: 1.1em;
             max-width: 600px;
             margin-bottom: 30px;
         }
@@ -118,31 +149,17 @@
             margin-top: 30px;
         }
 
-        /* Mira personalizada */
-        #crosshair {
-            position: absolute;
-            width: 20px; /* Tamaño por defecto */
-            height: 20px; /* Tamaño por defecto */
-            border: 2px solid #fff;
-            border-radius: 50%;
-            pointer-events: none; /* Permite clics a través de la mira */
-            transform: translate(-50%, -50%); /* Centra la mira en el cursor */
-            z-index: 1; /* Asegura que esté sobre el canvas */
-            box-shadow: 0 0 5px rgba(255,255,255,0.7);
-            display: none; /* Oculto hasta que el juego esté activo */
-        }
-
         /* Estilos específicos para la pantalla de Ajustes */
         #settings-screen .setting-group {
-            margin-bottom: 15px; /* Ajustado: antes 20px */
+            margin-bottom: 15px;
             text-align: left;
             width: 80%;
             max-width: 400px;
         }
         #settings-screen .setting-group label {
             display: block;
-            margin-bottom: 5px; /* Ajustado: antes 8px */
-            font-size: 1em; /* Ajustado: antes 1.1em */
+            margin-bottom: 5px;
+            font-size: 1em;
         }
         #settings-screen .setting-group select,
         #settings-screen .setting-group input[type="range"] {
@@ -157,24 +174,24 @@
         }
         #settings-screen .setting-group input[type="checkbox"] {
             margin-right: 10px;
-            transform: scale(1.1); /* Ligeramente más pequeño */
+            transform: scale(1.1);
         }
         #settings-screen p {
-            font-size: 0.9em; /* Ajustado: antes 1em */
+            font-size: 0.9em;
             margin-top: 5px;
             color: #ccc;
         }
         #settings-screen .buttons {
-            margin-top: 20px; /* Ajustado: antes 30px */
+            margin-top: 20px;
         }
 
         /* Estilos específicos para la pantalla de Ayuda */
         #help-screen p {
-            margin-bottom: 10px; /* Ajustado: antes 15px */
-            line-height: 1.5; /* Ajustado: antes 1.6 */
+            margin-bottom: 10px;
+            line-height: 1.5;
             width: 80%;
             max-width: 600px;
-            font-size: 1em; /* Ajustado: antes 1.1em */
+            font-size: 1em;
         }
         #help-screen ul {
             text-align: left;
@@ -182,10 +199,10 @@
             max-width: 600px;
             list-style-type: disc;
             margin-left: 20px;
-            font-size: 1em; /* Ajustado: antes se heredaba, ahora explícito */
+            font-size: 1em;
         }
         #help-screen li {
-            margin-bottom: 5px; /* Ajustado: antes 8px */
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -214,20 +231,6 @@
             <p>Se aplicará al reiniciar el juego.</p>
         </div>
 
-        <div class="setting-group">
-            <label for="crosshair-size">Tamaño de la Mira:</label>
-            <input type="range" id="crosshair-size" min="10" max="40" value="20">
-            <p>Ajusta el tamaño visual de tu mira.</p>
-        </div>
-
-        <div class="setting-group">
-            <label>
-                <input type="checkbox" id="show-system-cursor-checkbox">
-                Mostrar el cursor del sistema
-            </label>
-            <p>Marcar para ver el cursor normal del ratón junto a la mira del juego.</p>
-        </div>
-
         <div class="buttons">
             <button class="menu-button" onclick="applySettings()">Aplicar y Volver</button>
         </div>
@@ -247,6 +250,7 @@
         <ul>
             <li>**Mover la Mira:** Simplemente mueve tu ratón sobre la pantalla del juego.</li>
             <li>**Disparar:** Haz clic izquierdo con el ratón sobre un enemigo para eliminarlo.</li>
+            <li>**Pausar/Reanudar:** Haz clic en el botón "Pausa" en la esquina superior derecha.</li>
         </ul>
 
         <h3>Indicadores:</h3>
@@ -266,8 +270,13 @@
         <div>Puntuación: <span id="score-display">0</span></div>
     </div>
 
+    <button id="pause-button" onclick="togglePause()">Pausa</button>
+
+    <div id="pause-screen">
+        PAUSA
+    </div>
+
     <canvas id="gameCanvas" width="900" height="600"></canvas>
-    <div id="crosshair"></div>
 
     <div id="game-over-screen" class="game-screen">
         <h2>¡Game Over!</h2>
@@ -290,7 +299,6 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const crosshair = document.getElementById('crosshair');
 
         const startScreen = document.getElementById('start-screen');
         const settingsScreen = document.getElementById('settings-screen');
@@ -298,6 +306,9 @@
         const gameInfo = document.getElementById('game-info');
         const gameOverScreen = document.getElementById('game-over-screen');
         const winScreen = document.getElementById('win-screen');
+        const pauseButton = document.getElementById('pause-button');
+        const pauseScreen = document.getElementById('pause-screen');
+
 
         const waveDisplay = document.getElementById('wave-display');
         const enemiesRemainingDisplay = document.getElementById('enemies-remaining-display');
@@ -309,8 +320,6 @@
 
         // Ajustes de la pantalla
         const canvasSizeSelect = document.getElementById('canvas-size');
-        const crosshairSizeInput = document.getElementById('crosshair-size');
-        const showSystemCursorCheckbox = document.getElementById('show-system-cursor-checkbox');
 
         // --- Configuración del Juego ---
         let GAME_WIDTH = 900;
@@ -325,7 +334,8 @@
         let shieldDamage = 0;
         let currentWave = 1;
         let score = 0;
-        let gameActive = false; // El juego no está activo al inicio
+        let gameActive = false;
+        let gamePaused = false;
         let gameLoopId;
         let spawnInterval;
 
@@ -359,8 +369,8 @@
             gameOverScreen.style.display = 'none';
             winScreen.style.display = 'none';
             canvas.style.display = 'none';
-            crosshair.style.display = 'none';
-            document.body.classList.remove('game-active-cursor'); // Asegurarse de remover la clase de cursor
+            pauseButton.style.display = 'none';
+            pauseScreen.style.display = 'none';
         }
 
         function showStartScreen() {
@@ -372,9 +382,8 @@
             hideAllScreens();
             canvas.style.display = 'block';
             gameInfo.style.display = 'flex';
-            crosshair.style.display = 'block';
-            document.body.classList.add('game-active-cursor'); // Ocultar cursor del sistema cuando el juego está activo
-            resetGame(); // Reiniciar el juego al iniciar
+            pauseButton.style.display = 'block';
+            resetGame();
             startGameLoop();
             startSpawning();
         }
@@ -382,7 +391,7 @@
         function showSettings() {
             hideAllScreens();
             settingsScreen.style.display = 'flex';
-            loadSettings(); // Cargar los ajustes actuales en la UI
+            loadSettings();
         }
 
         function showHelp() {
@@ -408,14 +417,15 @@
 
         // --- Lógica del Juego ---
         function spawnEnemy() {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
 
             if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) {
                 return;
             }
 
-            // Límite de enemigos en pantalla para evitar sobrecarga (ajustado para ser más permisivo)
-            if (enemies.length >= waves[currentWave - 1].totalMobs * 0.75 && enemies.length > 50) { // Si hay demasiados enemigos en pantalla, espera (max 75% de la oleada actual)
+            // Límite de enemigos en pantalla para evitar sobrecarga
+            // CAMBIO AQUÍ: Reducido a 0.5 (50%) y el mínimo a 30
+            if (enemies.length >= waves[currentWave - 1].totalMobs * 0.5 && enemies.length > 30) {
                  return;
             }
 
@@ -458,6 +468,7 @@
         }
 
         function updateEnemies() {
+            if (gamePaused) return;
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i];
                 enemy.x += enemy.speedX;
@@ -481,9 +492,8 @@
 
         function updateInfoDisplay() {
             waveDisplay.textContent = currentWave;
-            // ENEMIES REMAINING: Considera los que faltan por spawnear y los que ya spawnearon y no han sido eliminados
             const totalRemaining = waves[currentWave - 1].totalMobs - enemiesKilledThisWave - shieldDamage;
-            enemiesRemainingDisplay.textContent = Math.max(0, totalRemaining); // No mostrar números negativos
+            enemiesRemainingDisplay.textContent = Math.max(0, totalRemaining);
 
             shieldDamageDisplay.textContent = shieldDamage;
             shieldLimitDisplay.textContent = waves[currentWave - 1].shieldLimit;
@@ -509,6 +519,7 @@
 
         function endGame(won) {
             gameActive = false;
+            gamePaused = false;
             clearInterval(spawnInterval);
             cancelAnimationFrame(gameLoopId);
             hideAllScreens();
@@ -519,11 +530,11 @@
                 finalScoreGameOver.textContent = score;
                 gameOverScreen.style.display = 'flex';
             }
-            document.body.classList.remove('game-active-cursor'); // Asegurarse de mostrar cursor normal
         }
 
         function resetGame() {
             gameActive = true;
+            gamePaused = false;
             enemies = [];
             enemiesSpawnedThisWave = 0;
             enemiesKilledThisWave = 0;
@@ -531,13 +542,27 @@
             currentWave = 1;
             score = 0;
             updateInfoDisplay();
-            // Asegurarse de que el escudo esté en la posición correcta según el nuevo tamaño del canvas
             shield.x = GAME_WIDTH / 2 - SHIELD_SIZE / 2;
             shield.y = GAME_HEIGHT / 2 - SHIELD_SIZE / 2;
+            pauseScreen.style.display = 'none';
         }
 
         function restartGame() {
             showStartScreen();
+        }
+
+        // --- Función de Pausa ---
+        function togglePause() {
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                cancelAnimationFrame(gameLoopId);
+                clearInterval(spawnInterval);
+                pauseScreen.style.display = 'flex';
+            } else {
+                startGameLoop();
+                startSpawning();
+                pauseScreen.style.display = 'none';
+            }
         }
 
         // --- Bucle Principal del Juego ---
@@ -546,7 +571,7 @@
         const frameTime = 1000 / FPS;
 
         function gameLoop(currentTime) {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
 
             if (currentTime - lastFrameTime < frameTime) {
                 gameLoopId = requestAnimationFrame(gameLoop);
@@ -560,8 +585,6 @@
             drawShield();
             drawEnemies();
 
-            // Lógica para pasar a la siguiente oleada cuando todos los enemigos de la actual han sido manejados
-            // Si todos los mobs spawnearon Y no quedan enemigos en pantalla (o llegaron al escudo)
             if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs && enemies.length === 0 && shieldDamage < waves[currentWave - 1].shieldLimit) {
                 nextWave();
             }
@@ -574,16 +597,8 @@
         }
 
         // --- Manejo de Eventos ---
-        canvas.addEventListener('mousemove', (e) => {
-            if (!gameActive) return;
-            const rect = canvas.getBoundingClientRect();
-            // Posicionar la mira directamente sobre el cursor del mouse
-            crosshair.style.left = `${e.clientX - rect.left}px`;
-            crosshair.style.top = `${e.clientY - rect.top}px`;
-        });
-
         canvas.addEventListener('click', (e) => {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
             const mouseX = e.clientX - canvas.getBoundingClientRect().left;
             const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
@@ -597,9 +612,8 @@
                     enemiesKilledThisWave++;
                     updateInfoDisplay();
                     
-                    // Si todos los enemigos han sido matados o absorbidos y no quedan enemigos en pantalla
                     if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs && enemies.length === 0) {
-                        if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) { // Asegurarse de que todos spawnearon
+                        if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) {
                             nextWave();
                         }
                     }
@@ -610,39 +624,15 @@
 
         // --- Funciones de Ajustes ---
         function loadSettings() {
-            // Cargar tamaño del canvas guardado
             const savedCanvasSize = localStorage.getItem('canvasSize');
             if (savedCanvasSize) {
                 canvasSizeSelect.value = savedCanvasSize;
             } else {
-                canvasSizeSelect.value = "900x600"; // Default
-            }
-
-            // Cargar tamaño de la mira guardado
-            const savedCrosshairSize = localStorage.getItem('crosshairSize');
-            if (savedCrosshairSize) {
-                crosshairSizeInput.value = savedCrosshairSize;
-                crosshair.style.width = `${savedCrosshairSize}px`;
-                crosshair.style.height = `${savedCrosshairSize}px`;
-            } else {
-                crosshairSizeInput.value = "20"; // Default
-                crosshair.style.width = `20px`;
-                crosshair.style.height = `20px`;
-            }
-
-            // Cargar estado del cursor del sistema
-            const savedCursorSetting = localStorage.getItem('showSystemCursor');
-            if (savedCursorSetting === 'true') {
-                showSystemCursorCheckbox.checked = true;
-                document.body.classList.add('show-system-cursor');
-            } else {
-                showSystemCursorCheckbox.checked = false;
-                document.body.classList.remove('show-system-cursor');
+                canvasSizeSelect.value = "900x600";
             }
         }
 
         function applySettings() {
-            // Guardar tamaño del canvas
             const selectedSize = canvasSizeSelect.value;
             const [width, height] = selectedSize.split('x').map(Number);
             localStorage.setItem('canvasSize', selectedSize);
@@ -651,29 +641,13 @@
             canvas.width = GAME_WIDTH;
             canvas.height = GAME_HEIGHT;
 
-            // Guardar tamaño de la mira
-            const crosshairSize = crosshairSizeInput.value;
-            localStorage.setItem('crosshairSize', crosshairSize);
-            crosshair.style.width = `${crosshairSize}px`;
-            crosshair.style.height = `${crosshairSize}px`;
-
-            // Guardar estado del cursor del sistema
-            const systemCursorVisible = showSystemCursorCheckbox.checked;
-            localStorage.setItem('showSystemCursor', systemCursorVisible);
-            if (systemCursorVisible) {
-                document.body.classList.add('show-system-cursor');
-            } else {
-                document.body.classList.remove('show-system-cursor');
-            }
-
-            showStartScreen(); // Volver a la pantalla de inicio
+            showStartScreen();
             alert('Ajustes aplicados. Si cambiaste el tamaño de la ventana, el juego se adaptará al volver a Jugar.');
         }
 
         // --- Inicio del Juego (al cargar la página) ---
         window.onload = () => {
-            loadSettings(); // Cargar ajustes al inicio
-            // Aplicar tamaño inicial del canvas basado en los ajustes cargados
+            loadSettings();
             const savedCanvasSize = localStorage.getItem('canvasSize') || "900x600";
             const [width, height] = savedCanvasSize.split('x').map(Number);
             GAME_WIDTH = width;
@@ -681,7 +655,7 @@
             canvas.width = GAME_WIDTH;
             canvas.height = GAME_HEIGHT;
 
-            showStartScreen(); // Mostrar la pantalla de inicio
+            showStartScreen();
         };
 
     </script>
