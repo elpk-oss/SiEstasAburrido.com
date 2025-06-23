@@ -7,29 +7,36 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden; /* Evita barras de desplazamiento */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #222; /* Fondo oscuro */
+            background-color: #222;
             font-family: 'Arial', sans-serif;
             color: #fff;
             flex-direction: column;
-            cursor: none; /* Oculta el cursor del sistema para usar la mira personalizada */
+            cursor: none; /* Oculta el cursor del sistema por defecto */
+        }
+
+        /* Si el usuario elige mostrar el cursor del sistema, lo restauramos */
+        body.show-system-cursor {
+            cursor: default;
         }
 
         h1 {
-            color: #ffcc00; /* Amarillo Peñarol */
+            color: #ffcc00;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
         }
 
         canvas {
-            background-color: #444; /* Fondo del "mundo" */
-            border: 5px solid #ffcc00; /* Borde amarillo Peñarol */
+            background-color: #444;
+            border: 5px solid #ffcc00;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            position: relative; /* Para la mira */
+            position: relative;
+            display: none; /* Oculto por defecto */
         }
 
         #game-info {
@@ -44,10 +51,12 @@
             z-index: 10;
             display: flex;
             gap: 30px;
+            pointer-events: none; /* Ignora clics para que el canvas los reciba */
         }
 
-        #game-over-screen, #win-screen {
-            display: none; /* Oculto inicialmente */
+        /* Pantallas de juego/menú */
+        .game-screen, .menu-screen {
+            display: none;
             position: absolute;
             top: 0;
             left: 0;
@@ -55,7 +64,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
             color: #fff;
-            font-size: 2em;
+            font-size: 1.5em;
             text-align: center;
             flex-direction: column;
             justify-content: center;
@@ -65,31 +74,36 @@
             box-sizing: border-box;
         }
 
-        #game-over-screen h2, #win-screen h2 {
+        .menu-screen h2 {
+            font-size: 2.5em;
+            color: #ffcc00;
+            margin-bottom: 30px;
+        }
+        .game-screen h2 {
             font-size: 3em;
             margin-bottom: 20px;
-            color: #ff0000; /* Rojo para Game Over */
         }
 
-        #win-screen h2 {
-            color: #00ff00; /* Verde para Victoria */
-        }
-
-        #game-over-screen button, #win-screen button {
+        .menu-button, .game-button {
             background-color: #ffcc00;
             color: #000;
             padding: 15px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1.2em;
             cursor: pointer;
-            margin-top: 30px;
+            margin: 10px;
             transition: background-color 0.3s ease;
+            min-width: 200px;
+            font-weight: bold;
         }
 
-        #game-over-screen button:hover, #win-screen button:hover {
+        .menu-button:hover, .game-button:hover {
             background-color: #e6b800;
         }
+
+        #game-over-screen h2 { color: #ff0000; }
+        #win-screen h2 { color: #00ff00; }
 
         #peñarol-logo-final {
             width: 150px;
@@ -100,19 +114,142 @@
         /* Mira personalizada */
         #crosshair {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 20px; /* Tamaño por defecto */
+            height: 20px; /* Tamaño por defecto */
             border: 2px solid #fff;
             border-radius: 50%;
             pointer-events: none; /* Permite clics a través de la mira */
             transform: translate(-50%, -50%); /* Centra la mira en el cursor */
             z-index: 1; /* Asegura que esté sobre el canvas */
             box-shadow: 0 0 5px rgba(255,255,255,0.7);
+            display: none; /* Oculto hasta que el juego esté activo */
+        }
+
+        /* Estilos específicos para la pantalla de Ajustes */
+        #settings-screen .setting-group {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 80%;
+            max-width: 400px;
+        }
+        #settings-screen .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        #settings-screen .setting-group select,
+        #settings-screen .setting-group input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ffcc00;
+            background-color: #333;
+            color: #fff;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        #settings-screen .setting-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        #settings-screen p {
+            font-size: 1em;
+            margin-top: 5px;
+            color: #ccc;
+        }
+        #settings-screen .buttons {
+            margin-top: 30px;
+        }
+
+        /* Estilos específicos para la pantalla de Ayuda */
+        #help-screen p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            width: 80%;
+            max-width: 600px;
+            font-size: 1.1em;
+        }
+        #help-screen ul {
+            text-align: left;
+            width: 80%;
+            max-width: 600px;
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        #help-screen li {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <h1>Defiende el Escudo Carbonero</h1>
+
+    <div id="start-screen" class="menu-screen">
+        <h2>¡Defiende el Honor de Peñarol!</h2>
+        <p>En este intenso juego, tu misión es proteger el sagrado escudo del Club Atlético Peñarol de oleadas implacables de enemigos.</p>
+        <button class="menu-button" onclick="showGame()">Jugar</button>
+        <button class="menu-button" onclick="showSettings()">Ajustes</button>
+        <button class="menu-button" onclick="showHelp()">Ayuda</button>
+        <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Logo">
+    </div>
+
+    <div id="settings-screen" class="menu-screen">
+        <h2>Ajustes del Juego</h2>
+
+        <div class="setting-group">
+            <label for="canvas-size">Tamaño de la Ventana del Juego:</label>
+            <select id="canvas-size">
+                <option value="900x600">Grande (900x600)</option>
+                <option value="800x500">Mediano (800x500)</option>
+                <option value="700x450">Pequeño (700x450)</option>
+            </select>
+            <p>Se aplicará al reiniciar el juego.</p>
+        </div>
+
+        <div class="setting-group">
+            <label for="crosshair-size">Tamaño de la Mira:</label>
+            <input type="range" id="crosshair-size" min="10" max="40" value="20">
+            <p>Ajusta el tamaño visual de tu mira.</p>
+        </div>
+
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="show-system-cursor-checkbox">
+                Mostrar el cursor del sistema
+            </label>
+            <p>Marcar para ver el cursor normal del ratón junto a la mira del juego.</p>
+        </div>
+
+        <div class="buttons">
+            <button class="menu-button" onclick="applySettings()">Aplicar y Volver</button>
+        </div>
+    </div>
+
+    <div id="help-screen" class="menu-screen">
+        <h2>¿Cómo Jugar?</h2>
+        <p>¡Bienvenido, Carbonero! Tu misión es defender el escudo de Peñarol en el centro del campo de hordas de enemigos.</p>
+        
+        <h3>Objetivo:</h3>
+        <ul>
+            <li>Elimina a todos los enemigos de cada oleada antes de que el escudo reciba demasiado daño.</li>
+            <li>Sobrevive a 10 oleadas para alcanzar la gloria y defender el honor Carbonero.</li>
+        </ul>
+
+        <h3>Controles:</h3>
+        <ul>
+            <li>**Mover la Mira:** Simplemente mueve tu ratón sobre la pantalla del juego.</li>
+            <li>**Disparar:** Haz clic izquierdo con el ratón sobre un enemigo para eliminarlo.</li>
+        </ul>
+
+        <h3>Indicadores:</h3>
+        <ul>
+            <li>**Oleada:** Muestra la oleada actual y el total de oleadas.</li>
+            <li>**Enemigos restantes:** Cuántos enemigos de la oleada actual quedan por aparecer y ser eliminados.</li>
+            <li>**Escudo dañado:** Cuántos enemigos han logrado llegar al escudo en la oleada actual. Si llega al límite (indicado a la derecha), pierdes.</li>
+            <li>**Puntuación:** Tu puntaje total por enemigos eliminados.</li>
+        </ul>
+        <button class="menu-button" onclick="showStartScreen()">Volver</button>
+    </div>
 
     <div id="game-info">
         <div>Oleada: <span id="wave-display">1</span>/10</div>
@@ -122,22 +259,24 @@
     </div>
 
     <canvas id="gameCanvas" width="900" height="600"></canvas>
-    <div id="crosshair"></div> <div id="game-over-screen">
+    <div id="crosshair"></div>
+
+    <div id="game-over-screen" class="game-screen">
         <h2>¡Game Over!</h2>
         <p>El escudo ha caído. Demasiados enemigos llegaron.</p>
         <p>Puntuación final: <span id="final-score-game-over">0</span></p>
-        <button onclick="restartGame()">Volver a Jugar</button>
+        <button class="game-button" onclick="restartGame()">Volver a Jugar</button>
         <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Logo">
     </div>
 
-    <div id="win-screen">
+    <div id="win-screen" class="game-screen">
         <h2>¡VICTORIA CARBONERA!</h2>
         <p>Has defendido el escudo de Peñarol con honor y valentía.</p>
         <p>Puntuación final: <span id="final-score-win">0</span></p>
         <p>¡Eres un verdadero campeón! Celebra tu victoria con la comunidad:</p>
         <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Community Logo">
         <p style="font-size: 1em; margin-top: 20px;">(Aquí iría un enlace real a tu comunidad Peñarol)</p>
-        <button onclick="restartGame()">Jugar de Nuevo</button>
+        <button class="game-button" onclick="restartGame()">Jugar de Nuevo</button>
     </div>
 
     <script>
@@ -145,23 +284,32 @@
         const ctx = canvas.getContext('2d');
         const crosshair = document.getElementById('crosshair');
 
+        const startScreen = document.getElementById('start-screen');
+        const settingsScreen = document.getElementById('settings-screen');
+        const helpScreen = document.getElementById('help-screen');
+        const gameInfo = document.getElementById('game-info');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const winScreen = document.getElementById('win-screen');
+
         const waveDisplay = document.getElementById('wave-display');
         const enemiesRemainingDisplay = document.getElementById('enemies-remaining-display');
         const shieldDamageDisplay = document.getElementById('shield-damage-display');
         const shieldLimitDisplay = document.getElementById('shield-limit-display');
         const scoreDisplay = document.getElementById('score-display');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const winScreen = document.getElementById('win-screen');
         const finalScoreGameOver = document.getElementById('final-score-game-over');
         const finalScoreWin = document.getElementById('final-score-win');
 
+        // Ajustes de la pantalla
+        const canvasSizeSelect = document.getElementById('canvas-size');
+        const crosshairSizeInput = document.getElementById('crosshair-size');
+        const showSystemCursorCheckbox = document.getElementById('show-system-cursor-checkbox');
+
         // --- Configuración del Juego ---
-        const GAME_WIDTH = canvas.width;
-        const GAME_HEIGHT = canvas.height;
+        let GAME_WIDTH = 900;
+        let GAME_HEIGHT = 600;
         const SHIELD_SIZE = 80;
         const ENEMY_SIZE = 20;
-        const ENEMY_SPEED_BASE = 0.5; // Velocidad base de los enemigos
-        const MAX_ENEMIES_ON_SCREEN = 200; // Límite de enemigos en pantalla a la vez para rendimiento
+        const ENEMY_SPEED_BASE = 0.5;
 
         let enemies = [];
         let enemiesSpawnedThisWave = 0;
@@ -169,38 +317,74 @@
         let shieldDamage = 0;
         let currentWave = 1;
         let score = 0;
-        let gameActive = true;
-        let gameLoopId; // Para el requestAnimationFrame
+        let gameActive = false; // El juego no está activo al inicio
+        let gameLoopId;
+        let spawnInterval;
 
         const shield = {
             x: GAME_WIDTH / 2 - SHIELD_SIZE / 2,
             y: GAME_HEIGHT / 2 - SHIELD_SIZE / 2,
             width: SHIELD_SIZE,
             height: SHIELD_SIZE,
-            color: '#ffcc00' // Amarillo Peñarol para el escudo
+            color: '#ffcc00'
         };
 
-        // Definición de las oleadas
-        // totalMobs: total de enemigos a aparecer en la oleada
-        // shieldLimit: cuántos enemigos pueden llegar al escudo antes de perder la oleada
         const waves = [
-            { totalMobs: 30, shieldLimit: 5 }, // Oleada 1 (más fácil para empezar)
-            { totalMobs: 50, shieldLimit: 4 }, // Oleada 2
-            { totalMobs: 80, shieldLimit: 4 }, // Oleada 3
-            { totalMobs: 120, shieldLimit: 3 }, // Oleada 4
-            { totalMobs: 180, shieldLimit: 3 }, // Oleada 5
-            { totalMobs: 250, shieldLimit: 2 }, // Oleada 6
-            { totalMobs: 350, shieldLimit: 2 }, // Oleada 7
-            { totalMobs: 450, shieldLimit: 1 }, // Oleada 8
-            { totalMobs: 600, shieldLimit: 1 }, // Oleada 9
-            { totalMobs: 800, shieldLimit: 1 }  // Oleada 10 (la más difícil)
+            { totalMobs: 50, shieldLimit: 20, spawnRate: 500 }, // Oleada 1: 2 mobs/seg (500ms)
+            { totalMobs: 100, shieldLimit: 15, spawnRate: 400 }, // Oleada 2
+            { totalMobs: 150, shieldLimit: 12, spawnRate: 350 }, // Oleada 3
+            { totalMobs: 200, shieldLimit: 10, spawnRate: 300 }, // Oleada 4
+            { totalMobs: 250, shieldLimit: 8, spawnRate: 250 }, // Oleada 5
+            { totalMobs: 300, shieldLimit: 7, spawnRate: 200 }, // Oleada 6
+            { totalMobs: 350, shieldLimit: 6, spawnRate: 180 }, // Oleada 7
+            { totalMobs: 400, shieldLimit: 5, spawnRate: 160 }, // Oleada 8
+            { totalMobs: 450, shieldLimit: 5, spawnRate: 140 }, // Oleada 9
+            { totalMobs: 500, shieldLimit: 5, spawnRate: 120 }  // Oleada 10 (la más difícil)
         ];
+
+        // --- Manejo de Pantallas ---
+        function hideAllScreens() {
+            startScreen.style.display = 'none';
+            settingsScreen.style.display = 'none';
+            helpScreen.style.display = 'none';
+            gameInfo.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            winScreen.style.display = 'none';
+            canvas.style.display = 'none';
+            crosshair.style.display = 'none';
+        }
+
+        function showStartScreen() {
+            hideAllScreens();
+            startScreen.style.display = 'flex';
+        }
+
+        function showGame() {
+            hideAllScreens();
+            canvas.style.display = 'block';
+            gameInfo.style.display = 'flex';
+            crosshair.style.display = 'block';
+            resetGame(); // Reiniciar el juego al iniciar
+            startGameLoop();
+            startSpawning();
+        }
+
+        function showSettings() {
+            hideAllScreens();
+            settingsScreen.style.display = 'flex';
+            loadSettings(); // Cargar los ajustes actuales en la UI
+        }
+
+        function showHelp() {
+            hideAllScreens();
+            helpScreen.style.display = 'flex';
+        }
 
         // --- Funciones de Dibujo ---
         function drawShield() {
             ctx.fillStyle = shield.color;
             ctx.fillRect(shield.x, shield.y, shield.width, shield.height);
-            ctx.strokeStyle = '#000'; // Borde negro
+            ctx.strokeStyle = '#000';
             ctx.lineWidth = 2;
             ctx.strokeRect(shield.x, shield.y, shield.width, shield.height);
         }
@@ -212,10 +396,18 @@
             });
         }
 
-        // --- Funciones del Juego ---
+        // --- Lógica del Juego ---
         function spawnEnemy() {
-            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs || enemies.length >= MAX_ENEMIES_ON_SCREEN) {
-                return; // No spawnear más enemigos si se alcanzó el límite de la oleada o de la pantalla
+            if (!gameActive) return;
+
+            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) {
+                // No spawnear más si ya se alcanzó el total para esta oleada
+                return;
+            }
+
+            // Límite de enemigos en pantalla para evitar sobrecarga
+            if (enemies.length >= GAME_WIDTH * GAME_HEIGHT / (ENEMY_SIZE * ENEMY_SIZE) / 20) { // Aproximadamente 5% de la pantalla
+                 return; // Si hay demasiados enemigos en pantalla, espera
             }
 
             let startX, startY;
@@ -235,7 +427,6 @@
                 startY = Math.random() * GAME_HEIGHT;
             }
 
-            // Calcular dirección hacia el centro del escudo
             const targetX = shield.x + shield.width / 2;
             const targetY = shield.y + shield.height / 2;
             const angle = Math.atan2(targetY - startY, targetX - startX);
@@ -243,19 +434,18 @@
             enemies.push({
                 x: startX,
                 y: startY,
-                speedX: Math.cos(angle) * (ENEMY_SPEED_BASE + (currentWave * 0.1)), // Velocidad aumenta por oleada
+                speedX: Math.cos(angle) * (ENEMY_SPEED_BASE + (currentWave * 0.1)),
                 speedY: Math.sin(angle) * (ENEMY_SPEED_BASE + (currentWave * 0.1)),
-                color: '#800000', // Rojo oscuro para enemigos
-                health: 1 // Simple, un clic los mata
+                color: '#800000'
             });
             enemiesSpawnedThisWave++;
+            updateInfoDisplay(); // Actualizar contador de enemigos restantes
         }
 
-        let spawnInterval;
         function startSpawning() {
-            // El intervalo de aparición disminuye con cada oleada
-            const spawnRate = Math.max(100, 500 - (currentWave * 40)); // Mínimo 100ms
-            spawnInterval = setInterval(spawnEnemy, spawnRate);
+            clearInterval(spawnInterval); // Limpiar cualquier intervalo anterior
+            const currentWaveData = waves[currentWave - 1];
+            spawnInterval = setInterval(spawnEnemy, currentWaveData.spawnRate);
         }
 
         function updateEnemies() {
@@ -271,8 +461,8 @@
                     enemy.y + ENEMY_SIZE > shield.y) {
                     
                     shieldDamage++;
+                    enemies.splice(i, 1);
                     updateInfoDisplay();
-                    enemies.splice(i, 1); // Remover enemigo
                     if (shieldDamage >= waves[currentWave - 1].shieldLimit) {
                         endGame(false); // Game Over
                     }
@@ -282,19 +472,22 @@
 
         function updateInfoDisplay() {
             waveDisplay.textContent = currentWave;
-            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - enemiesKilledThisWave;
+            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - enemiesKilledThisWave - (waves[currentWave-1].totalMobs - enemiesSpawnedThisWave);
+            // Mostrar los que faltan por matar O por spawnear.
+            // Más preciso: (total de mobs - (matados + dañados))
+            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - (enemiesKilledThisWave + shieldDamage);
+
             shieldDamageDisplay.textContent = shieldDamage;
             shieldLimitDisplay.textContent = waves[currentWave - 1].shieldLimit;
             scoreDisplay.textContent = score;
         }
 
         function nextWave() {
-            clearInterval(spawnInterval); // Detener el spawn de la oleada actual
-            enemies = []; // Limpiar enemigos restantes
+            clearInterval(spawnInterval);
+            enemies = [];
             enemiesSpawnedThisWave = 0;
             enemiesKilledThisWave = 0;
-            shieldDamage = 0; // Se resetea el daño del escudo entre oleadas (o no, es una decisión de juego)
-                              // Para este juego, lo resetearemos para que cada oleada tenga su propio límite.
+            shieldDamage = 0; // Resetear daño para la nueva oleada
 
             currentWave++;
             if (currentWave > waves.length) {
@@ -303,13 +496,14 @@
             }
             
             updateInfoDisplay();
-            startSpawning(); // Iniciar spawn para la nueva oleada
+            startSpawning();
         }
 
         function endGame(won) {
             gameActive = false;
             clearInterval(spawnInterval);
             cancelAnimationFrame(gameLoopId);
+            hideAllScreens();
             if (won) {
                 finalScoreWin.textContent = score;
                 winScreen.style.display = 'flex';
@@ -319,70 +513,46 @@
             }
         }
 
-        function restartGame() {
-            gameOverScreen.style.display = 'none';
-            winScreen.style.display = 'none';
+        function resetGame() {
+            gameActive = true;
             enemies = [];
             enemiesSpawnedThisWave = 0;
             enemiesKilledThisWave = 0;
             shieldDamage = 0;
             currentWave = 1;
             score = 0;
-            gameActive = true;
             updateInfoDisplay();
-            startGameLoop(); // Reiniciar el bucle de juego
-            startSpawning(); // Reiniciar el spawner de enemigos
+            // Asegurarse de que el escudo esté en la posición correcta según el nuevo tamaño del canvas
+            shield.x = GAME_WIDTH / 2 - SHIELD_SIZE / 2;
+            shield.y = GAME_HEIGHT / 2 - SHIELD_SIZE / 2;
         }
 
-        // --- Manejo de Eventos ---
-        canvas.addEventListener('mousemove', (e) => {
-            if (!gameActive) return;
-            const rect = canvas.getBoundingClientRect();
-            crosshair.style.left = `${e.clientX - rect.left}px`;
-            crosshair.style.top = `${e.clientY - rect.top}px`;
-        });
-
-        canvas.addEventListener('click', (e) => {
-            if (!gameActive) return;
-            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-            const mouseY = e.clientY - canvas.getBoundingClientRect().top;
-
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
-                // Detección de colisión simple (clic en el cuadrado del enemigo)
-                if (mouseX >= enemy.x && mouseX <= enemy.x + ENEMY_SIZE &&
-                    mouseY >= enemy.y && mouseY <= enemy.y + ENEMY_SIZE) {
-                    
-                    enemies.splice(i, 1); // Eliminar enemigo
-                    score += 10; // Sumar puntos
-                    enemiesKilledThisWave++;
-                    updateInfoDisplay();
-                    
-                    // Si todos los enemigos de la oleada han sido matados o han llegado al escudo
-                    // Y no hay más enemigos en pantalla que spawneen
-                    if (enemiesKilledThisWave + (waves[currentWave-1].totalMobs - enemiesSpawnedThisWave) === waves[currentWave-1].totalMobs && enemies.length === 0) {
-                        nextWave();
-                    } else if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs) {
-                        // Si todos los mobs (matados + llegados al escudo) son iguales al total de la oleada
-                        nextWave();
-                    }
-                    break; // Solo queremos matar a un enemigo por clic
-                }
-            }
-        });
+        function restartGame() {
+            // Vuelve a la pantalla de inicio después de terminar el juego
+            showStartScreen();
+        }
 
         // --- Bucle Principal del Juego ---
-        function gameLoop() {
+        let lastFrameTime = 0;
+        const FPS = 60;
+        const frameTime = 1000 / FPS;
+
+        function gameLoop(currentTime) {
             if (!gameActive) return;
 
-            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); // Limpiar el canvas
+            if (currentTime - lastFrameTime < frameTime) {
+                gameLoopId = requestAnimationFrame(gameLoop);
+                return;
+            }
+            lastFrameTime = currentTime;
+
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
             updateEnemies();
             drawShield();
             drawEnemies();
 
-            // Verificar si todos los enemigos de la oleada han sido eliminados o llegaron
-            // Esto es crucial para pasar a la siguiente oleada.
+            // Lógica para pasar a la siguiente oleada cuando todos los enemigos de la actual han sido manejados
             if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs && enemies.length === 0) {
                 nextWave();
             }
@@ -394,11 +564,105 @@
             gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        // --- Inicio del Juego ---
+        // --- Manejo de Eventos ---
+        canvas.addEventListener('mousemove', (e) => {
+            if (!gameActive) return; // Solo mover mira si el juego está activo
+            const rect = canvas.getBoundingClientRect();
+            // Posicionar la mira directamente sobre el cursor del mouse
+            crosshair.style.left = `${e.clientX - rect.left}px`;
+            crosshair.style.top = `${e.clientY - rect.top}px`;
+        });
+
+        canvas.addEventListener('click', (e) => {
+            if (!gameActive) return;
+            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                if (mouseX >= enemy.x && mouseX <= enemy.x + ENEMY_SIZE &&
+                    mouseY >= enemy.y && mouseY <= enemy.y + ENEMY_SIZE) {
+                    
+                    enemies.splice(i, 1);
+                    score += 10;
+                    enemiesKilledThisWave++;
+                    updateInfoDisplay();
+                    
+                    // Si todos los enemigos han sido matados o absorbidos
+                    if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs) {
+                        if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) { // Asegurarse de que todos spawnearon
+                            nextWave();
+                        }
+                    }
+                    break;
+                }
+            }
+        });
+
+        // --- Funciones de Ajustes ---
+        function loadSettings() {
+            // Cargar tamaño del canvas guardado
+            const savedCanvasSize = localStorage.getItem('canvasSize');
+            if (savedCanvasSize) {
+                canvasSizeSelect.value = savedCanvasSize;
+            }
+
+            // Cargar tamaño de la mira guardado
+            const savedCrosshairSize = localStorage.getItem('crosshairSize');
+            if (savedCrosshairSize) {
+                crosshairSizeInput.value = savedCrosshairSize;
+                crosshair.style.width = `${savedCrosshairSize}px`;
+                crosshair.style.height = `${savedCrosshairSize}px`;
+            } else {
+                crosshair.style.width = `20px`; // Valor por defecto
+                crosshair.style.height = `20px`;
+            }
+
+            // Cargar estado del cursor del sistema
+            const savedCursorSetting = localStorage.getItem('showSystemCursor');
+            if (savedCursorSetting === 'true') {
+                showSystemCursorCheckbox.checked = true;
+                document.body.classList.add('show-system-cursor');
+            } else {
+                showSystemCursorCheckbox.checked = false;
+                document.body.classList.remove('show-system-cursor');
+            }
+        }
+
+        function applySettings() {
+            // Guardar tamaño del canvas
+            const selectedSize = canvasSizeSelect.value;
+            const [width, height] = selectedSize.split('x').map(Number);
+            localStorage.setItem('canvasSize', selectedSize);
+            GAME_WIDTH = width;
+            GAME_HEIGHT = height;
+            canvas.width = GAME_WIDTH;
+            canvas.height = GAME_HEIGHT;
+
+            // Guardar tamaño de la mira
+            const crosshairSize = crosshairSizeInput.value;
+            localStorage.setItem('crosshairSize', crosshairSize);
+            crosshair.style.width = `${crosshairSize}px`;
+            crosshair.style.height = `${crosshairSize}px`;
+
+            // Guardar estado del cursor del sistema
+            localStorage.setItem('showSystemCursor', showSystemCursorCheckbox.checked);
+            if (showSystemCursorCheckbox.checked) {
+                document.body.classList.add('show-system-cursor');
+            } else {
+                document.body.classList.remove('show-system-cursor');
+            }
+
+            showStartScreen(); // Volver a la pantalla de inicio
+            alert('Ajustes aplicados. Para el tamaño de la ventana, el juego se reiniciará completamente.');
+        }
+
+        // --- Inicio del Juego (al cargar la página) ---
         window.onload = () => {
-            updateInfoDisplay();
-            startGameLoop();
-            startSpawning();
+            loadSettings(); // Cargar ajustes al inicio
+            canvas.width = GAME_WIDTH; // Aplicar tamaño inicial del canvas
+            canvas.height = GAME_HEIGHT;
+            showStartScreen(); // Mostrar la pantalla de inicio
         };
 
     </script>
