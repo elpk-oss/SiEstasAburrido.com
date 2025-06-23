@@ -7,12 +7,12 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Evita barras de desplazamiento */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #222;
+            background-color: #222; /* Fondo oscuro */
             font-family: 'Arial', sans-serif;
             color: #fff;
             flex-direction: column;
@@ -25,7 +25,7 @@
         }
 
         h1 {
-            color: #ffcc00;
+            color: #ffcc00; /* Amarillo Peñarol */
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             text-align: center;
@@ -64,7 +64,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
             color: #fff;
-            font-size: 1.5em;
+            /* Eliminamos font-size general de aquí para controlarlo por elemento */
             text-align: center;
             flex-direction: column;
             justify-content: center;
@@ -75,13 +75,20 @@
         }
 
         .menu-screen h2 {
-            font-size: 2.5em;
+            font-size: 2em; /* Ajustado: antes 2.5em */
             color: #ffcc00;
-            margin-bottom: 30px;
+            margin-bottom: 20px; /* Ajustado: antes 30px */
         }
         .game-screen h2 {
-            font-size: 3em;
+            font-size: 2.5em; /* Ajustado: antes 3em */
             margin-bottom: 20px;
+        }
+
+        /* Texto de introducción en la pantalla de inicio */
+        #start-screen p {
+            font-size: 1.1em; /* Ajustado: antes 1.5em (se hereda de .game-screen si no se redefine) */
+            max-width: 600px;
+            margin-bottom: 30px;
         }
 
         .menu-button, .game-button {
@@ -127,15 +134,15 @@
 
         /* Estilos específicos para la pantalla de Ajustes */
         #settings-screen .setting-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Ajustado: antes 20px */
             text-align: left;
             width: 80%;
             max-width: 400px;
         }
         #settings-screen .setting-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 1.1em;
+            margin-bottom: 5px; /* Ajustado: antes 8px */
+            font-size: 1em; /* Ajustado: antes 1.1em */
         }
         #settings-screen .setting-group select,
         #settings-screen .setting-group input[type="range"] {
@@ -150,24 +157,24 @@
         }
         #settings-screen .setting-group input[type="checkbox"] {
             margin-right: 10px;
-            transform: scale(1.2);
+            transform: scale(1.1); /* Ligeramente más pequeño */
         }
         #settings-screen p {
-            font-size: 1em;
+            font-size: 0.9em; /* Ajustado: antes 1em */
             margin-top: 5px;
             color: #ccc;
         }
         #settings-screen .buttons {
-            margin-top: 30px;
+            margin-top: 20px; /* Ajustado: antes 30px */
         }
 
         /* Estilos específicos para la pantalla de Ayuda */
         #help-screen p {
-            margin-bottom: 15px;
-            line-height: 1.6;
+            margin-bottom: 10px; /* Ajustado: antes 15px */
+            line-height: 1.5; /* Ajustado: antes 1.6 */
             width: 80%;
             max-width: 600px;
-            font-size: 1.1em;
+            font-size: 1em; /* Ajustado: antes 1.1em */
         }
         #help-screen ul {
             text-align: left;
@@ -175,9 +182,10 @@
             max-width: 600px;
             list-style-type: disc;
             margin-left: 20px;
+            font-size: 1em; /* Ajustado: antes se heredaba, ahora explícito */
         }
         #help-screen li {
-            margin-bottom: 8px;
+            margin-bottom: 5px; /* Ajustado: antes 8px */
         }
     </style>
 </head>
@@ -352,6 +360,7 @@
             winScreen.style.display = 'none';
             canvas.style.display = 'none';
             crosshair.style.display = 'none';
+            document.body.classList.remove('game-active-cursor'); // Asegurarse de remover la clase de cursor
         }
 
         function showStartScreen() {
@@ -364,6 +373,7 @@
             canvas.style.display = 'block';
             gameInfo.style.display = 'flex';
             crosshair.style.display = 'block';
+            document.body.classList.add('game-active-cursor'); // Ocultar cursor del sistema cuando el juego está activo
             resetGame(); // Reiniciar el juego al iniciar
             startGameLoop();
             startSpawning();
@@ -401,13 +411,12 @@
             if (!gameActive) return;
 
             if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) {
-                // No spawnear más si ya se alcanzó el total para esta oleada
                 return;
             }
 
-            // Límite de enemigos en pantalla para evitar sobrecarga
-            if (enemies.length >= GAME_WIDTH * GAME_HEIGHT / (ENEMY_SIZE * ENEMY_SIZE) / 20) { // Aproximadamente 5% de la pantalla
-                 return; // Si hay demasiados enemigos en pantalla, espera
+            // Límite de enemigos en pantalla para evitar sobrecarga (ajustado para ser más permisivo)
+            if (enemies.length >= waves[currentWave - 1].totalMobs * 0.75 && enemies.length > 50) { // Si hay demasiados enemigos en pantalla, espera (max 75% de la oleada actual)
+                 return;
             }
 
             let startX, startY;
@@ -439,11 +448,11 @@
                 color: '#800000'
             });
             enemiesSpawnedThisWave++;
-            updateInfoDisplay(); // Actualizar contador de enemigos restantes
+            updateInfoDisplay();
         }
 
         function startSpawning() {
-            clearInterval(spawnInterval); // Limpiar cualquier intervalo anterior
+            clearInterval(spawnInterval);
             const currentWaveData = waves[currentWave - 1];
             spawnInterval = setInterval(spawnEnemy, currentWaveData.spawnRate);
         }
@@ -472,10 +481,9 @@
 
         function updateInfoDisplay() {
             waveDisplay.textContent = currentWave;
-            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - enemiesKilledThisWave - (waves[currentWave-1].totalMobs - enemiesSpawnedThisWave);
-            // Mostrar los que faltan por matar O por spawnear.
-            // Más preciso: (total de mobs - (matados + dañados))
-            enemiesRemainingDisplay.textContent = waves[currentWave - 1].totalMobs - (enemiesKilledThisWave + shieldDamage);
+            // ENEMIES REMAINING: Considera los que faltan por spawnear y los que ya spawnearon y no han sido eliminados
+            const totalRemaining = waves[currentWave - 1].totalMobs - enemiesKilledThisWave - shieldDamage;
+            enemiesRemainingDisplay.textContent = Math.max(0, totalRemaining); // No mostrar números negativos
 
             shieldDamageDisplay.textContent = shieldDamage;
             shieldLimitDisplay.textContent = waves[currentWave - 1].shieldLimit;
@@ -487,7 +495,7 @@
             enemies = [];
             enemiesSpawnedThisWave = 0;
             enemiesKilledThisWave = 0;
-            shieldDamage = 0; // Resetear daño para la nueva oleada
+            shieldDamage = 0;
 
             currentWave++;
             if (currentWave > waves.length) {
@@ -511,6 +519,7 @@
                 finalScoreGameOver.textContent = score;
                 gameOverScreen.style.display = 'flex';
             }
+            document.body.classList.remove('game-active-cursor'); // Asegurarse de mostrar cursor normal
         }
 
         function resetGame() {
@@ -528,7 +537,6 @@
         }
 
         function restartGame() {
-            // Vuelve a la pantalla de inicio después de terminar el juego
             showStartScreen();
         }
 
@@ -553,7 +561,8 @@
             drawEnemies();
 
             // Lógica para pasar a la siguiente oleada cuando todos los enemigos de la actual han sido manejados
-            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs && enemies.length === 0) {
+            // Si todos los mobs spawnearon Y no quedan enemigos en pantalla (o llegaron al escudo)
+            if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs && enemies.length === 0 && shieldDamage < waves[currentWave - 1].shieldLimit) {
                 nextWave();
             }
 
@@ -566,7 +575,7 @@
 
         // --- Manejo de Eventos ---
         canvas.addEventListener('mousemove', (e) => {
-            if (!gameActive) return; // Solo mover mira si el juego está activo
+            if (!gameActive) return;
             const rect = canvas.getBoundingClientRect();
             // Posicionar la mira directamente sobre el cursor del mouse
             crosshair.style.left = `${e.clientX - rect.left}px`;
@@ -588,8 +597,8 @@
                     enemiesKilledThisWave++;
                     updateInfoDisplay();
                     
-                    // Si todos los enemigos han sido matados o absorbidos
-                    if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs) {
+                    // Si todos los enemigos han sido matados o absorbidos y no quedan enemigos en pantalla
+                    if (enemiesKilledThisWave + shieldDamage >= waves[currentWave - 1].totalMobs && enemies.length === 0) {
                         if (enemiesSpawnedThisWave >= waves[currentWave - 1].totalMobs) { // Asegurarse de que todos spawnearon
                             nextWave();
                         }
@@ -605,6 +614,8 @@
             const savedCanvasSize = localStorage.getItem('canvasSize');
             if (savedCanvasSize) {
                 canvasSizeSelect.value = savedCanvasSize;
+            } else {
+                canvasSizeSelect.value = "900x600"; // Default
             }
 
             // Cargar tamaño de la mira guardado
@@ -614,7 +625,8 @@
                 crosshair.style.width = `${savedCrosshairSize}px`;
                 crosshair.style.height = `${savedCrosshairSize}px`;
             } else {
-                crosshair.style.width = `20px`; // Valor por defecto
+                crosshairSizeInput.value = "20"; // Default
+                crosshair.style.width = `20px`;
                 crosshair.style.height = `20px`;
             }
 
@@ -646,22 +658,29 @@
             crosshair.style.height = `${crosshairSize}px`;
 
             // Guardar estado del cursor del sistema
-            localStorage.setItem('showSystemCursor', showSystemCursorCheckbox.checked);
-            if (showSystemCursorCheckbox.checked) {
+            const systemCursorVisible = showSystemCursorCheckbox.checked;
+            localStorage.setItem('showSystemCursor', systemCursorVisible);
+            if (systemCursorVisible) {
                 document.body.classList.add('show-system-cursor');
             } else {
                 document.body.classList.remove('show-system-cursor');
             }
 
             showStartScreen(); // Volver a la pantalla de inicio
-            alert('Ajustes aplicados. Para el tamaño de la ventana, el juego se reiniciará completamente.');
+            alert('Ajustes aplicados. Si cambiaste el tamaño de la ventana, el juego se adaptará al volver a Jugar.');
         }
 
         // --- Inicio del Juego (al cargar la página) ---
         window.onload = () => {
             loadSettings(); // Cargar ajustes al inicio
-            canvas.width = GAME_WIDTH; // Aplicar tamaño inicial del canvas
+            // Aplicar tamaño inicial del canvas basado en los ajustes cargados
+            const savedCanvasSize = localStorage.getItem('canvasSize') || "900x600";
+            const [width, height] = savedCanvasSize.split('x').map(Number);
+            GAME_WIDTH = width;
+            GAME_HEIGHT = height;
+            canvas.width = GAME_WIDTH;
             canvas.height = GAME_HEIGHT;
+
             showStartScreen(); // Mostrar la pantalla de inicio
         };
 
