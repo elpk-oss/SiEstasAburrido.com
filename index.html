@@ -3,324 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peñarol Community Chat</title>
+    <title>Aventura Carbonera - Peñarol Game</title>
     <style>
-        /* Estilos CSS */
         body {
-            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
+            overflow: hidden; /* Evita barras de desplazamiento */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px; /* Un poco más ancho para el chat */
-            text-align: center;
-            display: flex;
+            background-color: #222; /* Fondo oscuro */
+            font-family: 'Arial', sans-serif;
+            color: #fff;
             flex-direction: column;
-            gap: 20px;
         }
 
         h1 {
-            color: #ffcc00; /* Amarillo de Peñarol */
-            margin-bottom: 15px;
-            font-size: 2.2em;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            color: #ffcc00; /* Amarillo Peñarol */
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        .logo {
-            width: 150px;
+        canvas {
+            background-color: #444; /* Fondo del "mundo" */
+            border: 5px solid #ffcc00; /* Borde amarillo Peñarol */
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        #game-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+
+        #mission-text {
             margin-bottom: 10px;
+            color: #fff;
         }
 
-        #chat-section {
-            display: flex; /* Usamos flexbox para organizar los elementos del chat */
-            flex-direction: column;
-            height: 70vh; /* Altura del contenedor del chat */
-            max-height: 700px;
-        }
-
-        #chat-messages {
-            border: 1px solid #eee;
-            flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
-            overflow-y: auto; /* Permite desplazamiento vertical */
-            padding: 10px;
-            margin-bottom: 15px;
-            background-color: #fafafa;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column; /* Para que los mensajes se apilen */
-        }
-
-        .message {
-            margin-bottom: 8px;
-            padding: 8px 12px;
-            border-radius: 15px; /* Bordes más redondeados */
-            word-wrap: break-word;
-            max-width: 80%; /* Para que los mensajes no ocupen todo el ancho */
-            position: relative;
-        }
-
-        .message strong {
-            font-size: 0.9em;
-            display: block; /* Nombre de usuario en su propia línea */
-            margin-bottom: 3px;
-            color: #555;
-        }
-
-        .message span { /* Contenido del mensaje */
-            font-size: 1em;
-            line-height: 1.4;
-        }
-
-        .message.own {
-            background-color: #ffcc00; /* Amarillo para mensajes propios */
-            color: #000;
-            align-self: flex-end; /* Alinea a la derecha */
-            border-bottom-right-radius: 2px; /* Pequeño ajuste visual */
-        }
-
-        .message.other {
-            background-color: #e0e0e0; /* Gris claro para mensajes de otros */
-            color: #333;
-            align-self: flex-start; /* Alinea a la izquierda */
-            border-bottom-left-radius: 2px; /* Pequeño ajuste visual */
-        }
-
-        .input-area {
-            display: flex;
-            gap: 10px; /* Espacio entre input y botón */
-            margin-top: auto; /* Empuja el área de input al fondo del contenedor */
-        }
-
-        #message-input {
-            flex-grow: 1; /* Hace que ocupe el espacio restante */
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 20px; /* Redondeado como apps de chat */
-            font-size: 1em;
-        }
-
-        #send-button {
-            padding: 12px 20px;
-            background-color: #000; /* Negro para el botón de enviar */
-            color: #ffcc00; /* Amarillo */
-            border-radius: 20px; /* Redondeado */
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-            width: auto; /* Ajustar al contenido */
-        }
-
-        #send-button:hover {
-            background-color: #333;
-        }
-
-        #current-user-display {
-            font-weight: bold;
-            color: #000;
-            margin-top: 10px;
+        #congratulations-screen {
+            display: none; /* Oculto inicialmente */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: #ffcc00;
+            font-size: 2em;
             text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        #members-list {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            text-align: left;
+        #congratulations-screen h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ffcc00;
         }
 
-        #members-list h3 {
-            color: #000;
-            margin-bottom: 10px;
+        #congratulations-screen p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #fff;
         }
 
-        #members-list ul {
-            list-style: none;
-            padding: 0;
-            max-height: 120px;
-            overflow-y: auto;
-            border: 1px solid #eee;
-            border-radius: 4px;
-            background-color: #fafafa;
-            padding: 10px;
-        }
-
-        #members-list li {
-            padding: 5px 0;
-            border-bottom: 1px dotted #eee;
-            color: #666;
-        }
-
-        #members-list li:last-child {
-            border-bottom: none;
+        #peñarol-logo-final {
+            width: 200px;
+            height: auto;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Community" class="logo">
-        <h1>Peñarol Community Chat</h1>
+    <h1>Aventura Carbonera</h1>
 
-        <div id="chat-section">
-            <div id="current-user-display"></div>
-            <div id="chat-messages">
-                <div class="message other"><strong>Admin:</strong> ¡Bienvenido a la comunidad de Peñarol!</div>
-            </div>
-            <div class="input-area">
-                <input type="text" id="message-input" placeholder="Escribe tu mensaje...">
-                <button id="send-button">Enviar</button>
-            </div>
-
-            <div id="members-list">
-                <h3>Miembros Conectados (Simulado)</h3>
-                <ul id="active-members">
-                    <li>Admin</li>
-                </ul>
-            </div>
-        </div>
+    <div id="game-info">
+        <div id="mission-text">Misión: Ve a la zona verde.</div>
+        <div id="mission-counter">Misiones completadas: 0/5</div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div id="congratulations-screen">
+        <h2>¡Felicidades, Campeón!</h2>
+        <p>Has completado todas las misiones y demostrado tu pasión Carbonera.</p>
+        <p>¡Ahora es momento de festejar y unirte a la verdadera hinchada!</p>
+        <p>Te invitamos a la **Peñarol Community** para seguir compartiendo nuestra pasión.</p>
+        <img id="peñarol-logo-final" src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Community Logo">
+        <p style="font-size: 1em; margin-top: 20px;">(En una web real, aquí iría un enlace a la comunidad)</p>
+    </div>
 
     <script>
-        // --- TU CONFIGURACIÓN DE FIREBASE VA AQUÍ ---
-        // ¡REEMPLAZA CON TU PROPIA CONFIGURACIÓN DE FIREBASE!
-        // La obtendrás de la consola de Firebase cuando crees tu proyecto web.
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_AUTH_DOMAIN",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_STORAGE_BUCKET",
-            messagingSenderId: "TU_MESSAGING_SENDER_ID",
-            appId: "TU_APP_ID"
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const missionTextDisplay = document.getElementById('mission-text');
+        const missionCounterDisplay = document.getElementById('mission-counter');
+        const congratulationsScreen = document.getElementById('congratulations-screen');
+
+        const player = {
+            x: 50,
+            y: 50,
+            width: 30,
+            height: 30,
+            color: '#000080', // Azul oscuro
+            speed: 5
         };
 
-        // Inicializa Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(); // Obtén una instancia de Firestore
+        let completedMissions = 0;
+        let currentMissionIndex = 0;
 
-        // --- FIN DE LA CONFIGURACIÓN DE FIREBASE ---
+        // Definición de las 5 misiones
+        // Cada misión tiene un objetivo (coordenadas x, y) y un mensaje
+        const missions = [
+            { id: 0, targetX: 700, targetY: 500, message: "Misión 1: ¡Llega a la esquina inferior derecha!" },
+            { id: 1, targetX: 100, targetY: 500, message: "Misión 2: ¡Ahora ve a la esquina inferior izquierda!" },
+            { id: 2, targetX: 700, targetY: 100, message: "Misión 3: ¡Sube a la esquina superior derecha!" },
+            { id: 3, targetX: 100, targetY: 100, message: "Misión 4: ¡Y ahora a la esquina superior izquierda!" },
+            { id: 4, targetX: 385, targetY: 285, message: "Misión 5: ¡Dirígete al centro del campo!" }
+        ];
 
-        const chatMessages = document.getElementById('chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const activeMembersList = document.getElementById('active-members');
-        const currentUserDisplay = document.getElementById('current-user-display');
+        // Teclas presionadas
+        const keys = {
+            ArrowUp: false,
+            ArrowDown: false,
+            ArrowLeft: false,
+            ArrowRight: false,
+            w: false,
+            s: false,
+            a: false,
+            d: false
+        };
 
-        let currentUserName = ''; // El nombre de usuario asignado automáticamente
+        // --- Funciones del Juego ---
 
-        // Función para generar un nombre de usuario único
-        function generateUniqueUsername() {
-            // Intenta obtener un nombre de usuario guardado en localStorage
-            let storedUserName = localStorage.getItem('peñarolChatUsername');
-            if (storedUserName) {
-                return storedUserName;
-            }
-
-            // Si no hay uno, genera uno nuevo y guárdalo
-            const randomNumber = Math.floor(Math.random() * 10000);
-            const newUserName = `Usuario${randomNumber}`;
-            localStorage.setItem('peñarolChatUsername', newUserName);
-            return newUserName;
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
         }
 
-        // Asigna el nombre de usuario al cargar la página
-        currentUserName = generateUniqueUsername();
-        currentUserDisplay.textContent = `Estás chateando como: ${currentUserName}`;
-        addMemberToList(currentUserName); // Agrega el usuario actual a la lista (simulado por ahora)
-
-        sendButton.addEventListener('click', () => {
-            sendMessage();
-        });
-
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+        function drawMissionTarget() {
+            if (currentMissionIndex < missions.length) {
+                const mission = missions[currentMissionIndex];
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.5)'; // Zona verde transparente
+                ctx.fillRect(mission.targetX - 25, mission.targetY - 25, 50, 50); // Área objetivo
             }
-        });
+        }
 
-        function sendMessage() {
-            const messageText = messageInput.value.trim();
-            if (messageText === '') {
+        function updatePlayerPosition() {
+            if (keys.ArrowUp || keys.w) player.y -= player.speed;
+            if (keys.ArrowDown || keys.s) player.y += player.speed;
+            if (keys.ArrowLeft || keys.a) player.x -= player.speed;
+            if (keys.ArrowRight || keys.d) player.x += player.speed;
+
+            // Limitar al jugador dentro del canvas
+            if (player.x < 0) player.x = 0;
+            if (player.y < 0) player.y = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
+        }
+
+        function checkMissionCompletion() {
+            if (completedMissions === missions.length) {
+                showCongratulations();
                 return;
             }
 
-            // --- LÓGICA DE ENVÍO DE MENSAJE CON FIREBASE FIRESTORE ---
-            // Envía el mensaje a tu colección 'messages' en Firestore
-            db.collection("messages").add({
-                user: currentUserName,
-                text: messageText,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() // Para ordenar por tiempo
-            })
-            .then(() => {
-                messageInput.value = ''; // Limpiar input después de enviar
-            })
-            .catch((error) => {
-                console.error("Error al enviar mensaje:", error);
-                alert("Error al enviar el mensaje. Revisa la consola para más detalles.");
-            });
-            // --- FIN LÓGICA DE ENVÍO DE MENSAJE ---
-        }
+            const currentMission = missions[currentMissionIndex];
+            const targetX = currentMission.targetX;
+            const targetY = currentMission.targetY;
 
-        function addMessageToChat(user, text, isOwnMessage) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            if (isOwnMessage) {
-                messageDiv.classList.add('own');
-            } else {
-                messageDiv.classList.add('other');
-            }
-            messageDiv.innerHTML = `<strong>${user}:</strong> <span>${text}</span>`;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll al final
-        }
+            // Simple detección de colisión/proximidad con el objetivo
+            if (player.x < targetX + 25 &&
+                player.x + player.width > targetX - 25 &&
+                player.y < targetY + 25 &&
+                player.y + player.height > targetY - 25) {
 
-        function addMemberToList(member) {
-            // Simulación: en un chat real, la lista de miembros sería gestionada por el servidor
-            // Esta función solo agrega el usuario actual a la lista local.
-            const existingMembers = Array.from(activeMembersList.children).map(li => li.textContent);
-            if (!existingMembers.includes(member)) {
-                const memberLi = document.createElement('li');
-                memberLi.textContent = member;
-                activeMembersList.appendChild(memberLi);
-            }
-        }
+                completedMissions++;
+                currentMissionIndex++;
+                missionCounterDisplay.textContent = `Misiones completadas: ${completedMissions}/${missions.length}`;
 
-        // --- LÓGICA DE ESCUCHA DE MENSAJES EN TIEMPO REAL CON FIREBASE FIRESTORE ---
-        // Escucha los mensajes en tiempo real desde tu colección 'messages'
-        db.collection("messages").orderBy("timestamp").onSnapshot((snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    const message = change.doc.data();
-                    const isOwn = message.user === currentUserName;
-                    addMessageToChat(message.user, message.text, isOwn);
+                if (completedMissions < missions.length) {
+                    missionTextDisplay.textContent = missions[currentMissionIndex].message;
+                    // Mueve al jugador a una posición inicial para la siguiente misión
+                    player.x = 50;
+                    player.y = 50;
+                } else {
+                    showCongratulations();
                 }
-                // Si quieres manejar mensajes modificados o eliminados:
-                // if (change.type === "modified") { ... }
-                // if (change.type === "removed") { ... }
-            });
-        }, (error) => {
-            console.error("Error al escuchar mensajes:", error);
-            alert("No se pudieron cargar los mensajes. Revisa la consola.");
-        });
-        // --- FIN LÓGICA DE ESCUCHA DE MENSAJES ---
+            }
+        }
 
-        // NOTA: La lista de "Miembros Conectados" sigue siendo una simulación en este código.
-        // Para que sea real, necesitarías implementar un sistema de "presencia" en Firebase,
-        // que es un poco más avanzado pero posible. Implicaría que cada usuario al conectarse
-        // escriba su nombre en una colección de "usuarios activos" y la borre al desconectarse.
+        function showCongratulations() {
+            congratulationsScreen.style.display = 'flex'; // Muestra la pantalla de felicitación
+            // Detener el bucle del juego
+            cancelAnimationFrame(gameLoopId);
+        }
+
+        // --- Bucle Principal del Juego ---
+        let gameLoopId;
+
+        function gameLoop() {
+            // 1. Limpiar el canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Actualizar la posición del jugador
+            updatePlayerPosition();
+
+            // 3. Dibujar el objetivo de la misión
+            drawMissionTarget();
+
+            // 4. Dibujar al jugador
+            drawPlayer();
+
+            // 5. Comprobar si la misión actual se ha completado
+            checkMissionCompletion();
+
+            // 6. Volver a llamar al bucle
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- Manejo de Eventos de Teclado ---
+        window.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.key)) {
+                keys[e.key] = true;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key)) {
+                keys[e.key] = false;
+            }
+        });
+
+        // Iniciar el juego al cargar la página
+        window.onload = () => {
+            missionTextDisplay.textContent = missions[0].message; // Establecer el primer mensaje de misión
+            gameLoop();
+        };
+
     </script>
 </body>
 </html>
