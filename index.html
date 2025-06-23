@@ -24,140 +24,120 @@
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 600px; /* Un poco más ancho para el chat */
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         h1 {
             color: #ffcc00; /* Amarillo de Peñarol */
-            margin-bottom: 25px;
-            font-size: 2em;
+            margin-bottom: 15px;
+            font-size: 2.2em;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .logo {
-            width: 150px; /* Ajustado para la nueva imagen */
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1em;
-        }
-
-        button {
-            background-color: #ffcc00; /* Amarillo de Peñarol */
-            color: #000; /* Negro para contraste */
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 10px; /* Espacio entre botones */
-        }
-
-        button:hover {
-            background-color: #e6b800; /* Un amarillo más oscuro al pasar el ratón */
-        }
-
-        .secondary-button {
-            background-color: #000; /* Negro para el botón secundario */
-            color: #ffcc00; /* Amarillo para el texto */
-            border: 1px solid #ffcc00; /* Borde amarillo */
-        }
-
-        .secondary-button:hover {
-            background-color: #333;
-        }
-
-        #login-section {
-            display: block; /* Visible por defecto */
-        }
-
-        #register-section {
-            display: none; /* Oculto por defecto */
+            width: 150px;
+            margin-bottom: 10px;
         }
 
         #chat-section {
-            display: none; /* Oculto por defecto */
-            text-align: left;
+            display: flex; /* Usamos flexbox para organizar los elementos del chat */
+            flex-direction: column;
+            height: 70vh; /* Altura del contenedor del chat */
+            max-height: 700px;
         }
 
         #chat-messages {
             border: 1px solid #eee;
-            height: 300px;
-            overflow-y: scroll;
+            flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
+            overflow-y: auto; /* Permite desplazamiento vertical */
             padding: 10px;
             margin-bottom: 15px;
             background-color: #fafafa;
             border-radius: 4px;
+            display: flex;
+            flex-direction: column; /* Para que los mensajes se apilen */
         }
 
         .message {
             margin-bottom: 8px;
-            padding: 5px 8px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 15px; /* Bordes más redondeados */
             word-wrap: break-word;
+            max-width: 80%; /* Para que los mensajes no ocupen todo el ancho */
+            position: relative;
         }
 
         .message strong {
-            color: #000; /* Negro para el nombre de usuario */
+            font-size: 0.9em;
+            display: block; /* Nombre de usuario en su propia línea */
+            margin-bottom: 3px;
+            color: #555;
+        }
+
+        .message span { /* Contenido del mensaje */
+            font-size: 1em;
+            line-height: 1.4;
         }
 
         .message.own {
-            background-color: #dcf8c6; /* Verde claro para mensajes propios */
-            text-align: right;
+            background-color: #ffcc00; /* Amarillo para mensajes propios */
+            color: #000;
+            align-self: flex-end; /* Alinea a la derecha */
+            border-bottom-right-radius: 2px; /* Pequeño ajuste visual */
         }
 
         .message.other {
             background-color: #e0e0e0; /* Gris claro para mensajes de otros */
-            text-align: left;
+            color: #333;
+            align-self: flex-start; /* Alinea a la izquierda */
+            border-bottom-left-radius: 2px; /* Pequeño ajuste visual */
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px; /* Espacio entre input y botón */
+            margin-top: auto; /* Empuja el área de input al fondo del contenedor */
         }
 
         #message-input {
-            width: calc(100% - 80px);
-            padding: 10px;
+            flex-grow: 1; /* Hace que ocupe el espacio restante */
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 20px; /* Redondeado como apps de chat */
             font-size: 1em;
-            margin-right: 10px;
         }
 
         #send-button {
-            width: 70px;
-            padding: 10px;
-            background-color: #0056b3; /* Un azul para el botón de enviar */
-            color: white;
-            margin-bottom: 0; /* Eliminar margen inferior */
+            padding: 12px 20px;
+            background-color: #000; /* Negro para el botón de enviar */
+            color: #ffcc00; /* Amarillo */
+            border-radius: 20px; /* Redondeado */
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: auto; /* Ajustar al contenido */
         }
 
         #send-button:hover {
-            background-color: #004085;
+            background-color: #333;
+        }
+
+        #current-user-display {
+            font-weight: bold;
+            color: #000;
+            margin-top: 10px;
+            text-align: center;
         }
 
         #members-list {
             margin-top: 20px;
             border-top: 1px solid #eee;
             padding-top: 15px;
+            text-align: left;
         }
 
         #members-list h3 {
@@ -168,7 +148,7 @@
         #members-list ul {
             list-style: none;
             padding: 0;
-            max-height: 150px;
+            max-height: 120px;
             overflow-y: auto;
             border: 1px solid #eee;
             border-radius: 4px;
@@ -179,16 +159,11 @@
         #members-list li {
             padding: 5px 0;
             border-bottom: 1px dotted #eee;
+            color: #666;
         }
 
         #members-list li:last-child {
             border-bottom: none;
-        }
-
-        .error-message {
-            color: red;
-            margin-top: 10px;
-            font-size: 0.9em;
         }
     </style>
 </head>
@@ -197,48 +172,18 @@
         <img src="https://i.imgur.com/G9fA4Xb.jpg" alt="Peñarol Community" class="logo">
         <h1>Peñarol Community Chat</h1>
 
-        <div id="login-section">
-            <h2>Iniciar Sesión</h2>
-            <div class="form-group">
-                <label for="login-username">Usuario:</label>
-                <input type="text" id="login-username" placeholder="Tu nombre de usuario" required>
-            </div>
-            <div class="form-group">
-                <label for="login-password">Contraseña:</label>
-                <input type="password" id="login-password" placeholder="Tu contraseña" required>
-            </div>
-            <button id="login-button">Entrar al Chat</button>
-            <button id="show-register-button" class="secondary-button">Regístrate</button>
-            <p id="login-error" class="error-message" style="display: none;">Usuario o contraseña incorrectos.</p>
-        </div>
-
-        <div id="register-section">
-            <h2>Crear Nueva Cuenta</h2>
-            <div class="form-group">
-                <label for="register-username">Elige un Usuario:</label>
-                <input type="text" id="register-username" placeholder="Nuevo nombre de usuario" required>
-            </div>
-            <div class="form-group">
-                <label for="register-password">Crea una Contraseña:</label>
-                <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required>
-            </div>
-            <button id="register-button">Crear Cuenta</button>
-            <button id="show-login-button" class="secondary-button">Ya tengo cuenta</button>
-            <p id="register-error" class="error-message" style="display: none;">Error al registrar usuario.</p>
-        </div>
-
         <div id="chat-section">
-            <h2>Chat Global</h2>
+            <div id="current-user-display"></div>
             <div id="chat-messages">
                 <div class="message other"><strong>Admin:</strong> ¡Bienvenido a la comunidad de Peñarol!</div>
             </div>
-            <div style="display: flex;">
+            <div class="input-area">
                 <input type="text" id="message-input" placeholder="Escribe tu mensaje...">
                 <button id="send-button">Enviar</button>
             </div>
 
             <div id="members-list">
-                <h3>Miembros Conectados</h3>
+                <h3>Miembros Conectados (Simulado)</h3>
                 <ul id="active-members">
                     <li>Admin</li>
                 </ul>
@@ -246,146 +191,56 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // JavaScript para la interactividad
-        const loginSection = document.getElementById('login-section');
-        const registerSection = document.getElementById('register-section');
-        const chatSection = document.getElementById('chat-section');
+        // --- TU CONFIGURACIÓN DE FIREBASE VA AQUÍ ---
+        // ¡REEMPLAZA CON TU PROPIA CONFIGURACIÓN DE FIREBASE!
+        // La obtendrás de la consola de Firebase cuando crees tu proyecto web.
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
 
-        // Botones y campos de Login
-        const loginButton = document.getElementById('login-button');
-        const showRegisterButton = document.getElementById('show-register-button');
-        const loginUsernameInput = document.getElementById('login-username');
-        const loginPasswordInput = document.getElementById('login-password');
-        const loginError = document.getElementById('login-error');
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(); // Obtén una instancia de Firestore
 
-        // Botones y campos de Registro
-        const registerButton = document.getElementById('register-button');
-        const showLoginButton = document.getElementById('show-login-button');
-        const registerUsernameInput = document.getElementById('register-username');
-        const registerPasswordInput = document.getElementById('register-password');
-        const registerError = document.getElementById('register-error');
+        // --- FIN DE LA CONFIGURACIÓN DE FIREBASE ---
 
-        // Elementos del Chat
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const activeMembersList = document.getElementById('active-members');
+        const currentUserDisplay = document.getElementById('current-user-display');
 
-        let currentUser = ''; // Variable para almacenar el nombre del usuario logeado
+        let currentUserName = ''; // El nombre de usuario asignado automáticamente
 
-        // --- MANEJADORES DE VISIBILIDAD DE SECCIONES ---
-        showRegisterButton.addEventListener('click', () => {
-            loginSection.style.display = 'none';
-            registerSection.style.display = 'block';
-            loginError.style.display = 'none'; // Limpiar errores de login
-        });
-
-        showLoginButton.addEventListener('click', () => {
-            registerSection.style.display = 'none';
-            loginSection.style.display = 'block';
-            registerError.style.display = 'none'; // Limpiar errores de registro
-        });
-
-        // --- LÓGICA DE INICIO DE SESIÓN ---
-        loginButton.addEventListener('click', () => {
-            const username = loginUsernameInput.value.trim();
-            const password = loginPasswordInput.value.trim();
-
-            if (username === '' || password === '') {
-                loginError.textContent = 'Por favor, ingresa usuario y contraseña.';
-                loginError.style.display = 'block';
-                return;
+        // Función para generar un nombre de usuario único
+        function generateUniqueUsername() {
+            // Intenta obtener un nombre de usuario guardado en localStorage
+            let storedUserName = localStorage.getItem('peñarolChatUsername');
+            if (storedUserName) {
+                return storedUserName;
             }
 
-            // --- INICIO DE LÓGICA DE BACKEND PARA LOGIN ---
-            // Aquí es donde integrarías la autenticación real con un servicio como Firebase o Supabase.
-            // NUNCA ALMACENES CONTRASEÑAS EN TEXTO PLANO NI LAS COMPARES DIRECTAMENTE AQUÍ.
-            // Ejemplo (pseudocódigo, NO FUNCIONA SIN BACKEND REAL):
-            /*
-            firebase.auth().signInWithEmailAndPassword(username, password)
-                .then((userCredential) => {
-                    // Si el login es exitoso
-                    currentUser = username; // O el nombre de usuario de Firebase
-                    loginSection.style.display = 'none';
-                    chatSection.style.display = 'block';
-                    loginError.style.display = 'none';
-                    // Cargar mensajes y miembros del chat desde Firebase/Supabase
-                    // setupRealtimeListeners();
-                })
-                .catch((error) => {
-                    // Si hay un error en el login
-                    loginError.textContent = 'Usuario o contraseña incorrectos. Intenta de nuevo.';
-                    loginError.style.display = 'block';
-                    console.error("Error de login:", error.message);
-                });
-            */
+            // Si no hay uno, genera uno nuevo y guárdalo
+            const randomNumber = Math.floor(Math.random() * 10000);
+            const newUserName = `Usuario${randomNumber}`;
+            localStorage.setItem('peñarolChatUsername', newUserName);
+            return newUserName;
+        }
 
-            // --- SIMULACIÓN DE LOGIN (SOLO PARA PRUEBAS DE INTERFAZ, REMOVER EN PRODUCCIÓN) ---
-            if (username === 'hincha' && password === 'carbonero') {
-                currentUser = username;
-                loginSection.style.display = 'none';
-                chatSection.style.display = 'block';
-                loginError.style.display = 'none';
-                addMemberToList(currentUser); // Agrega el usuario simulado a la lista
-            } else {
-                loginError.textContent = 'Usuario o contraseña incorrectos. Intenta de nuevo.';
-                loginError.style.display = 'block';
-            }
-            // --- FIN DE LÓGICA DE BACKEND PARA LOGIN ---
-        });
+        // Asigna el nombre de usuario al cargar la página
+        currentUserName = generateUniqueUsername();
+        currentUserDisplay.textContent = `Estás chateando como: ${currentUserName}`;
+        addMemberToList(currentUserName); // Agrega el usuario actual a la lista (simulado por ahora)
 
-        // --- LÓGICA DE REGISTRO ---
-        registerButton.addEventListener('click', () => {
-            const username = registerUsernameInput.value.trim();
-            const password = registerPasswordInput.value.trim();
-
-            if (username.length < 3) {
-                registerError.textContent = 'El usuario debe tener al menos 3 caracteres.';
-                registerError.style.display = 'block';
-                return;
-            }
-            if (password.length < 6) {
-                registerError.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-                registerError.style.display = 'block';
-                return;
-            }
-
-            // --- INICIO DE LÓGICA DE BACKEND PARA REGISTRO ---
-            // Aquí es donde integrarías la creación de un nuevo usuario con un servicio como Firebase o Supabase.
-            // ¡EL ALMACENAMIENTO DE LA CONTRASEÑA DEBE SER SEGURO EN EL BACKEND!
-            // Ejemplo (pseudocódigo, NO FUNCIONA SIN BACKEND REAL):
-            /*
-            firebase.auth().createUserWithEmailAndPassword(username, password) // Firebase usa email, no username directamente
-                .then((userCredential) => {
-                    // Usuario creado exitosamente
-                    console.log("Usuario registrado:", userCredential.user);
-                    registerError.style.display = 'none';
-                    alert('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.');
-                    registerSection.style.display = 'none';
-                    loginSection.style.display = 'block'; // Volver a la pantalla de login
-                    loginUsernameInput.value = username; // Precargar el usuario en el login
-                })
-                .catch((error) => {
-                    // Error al crear usuario (ej. usuario ya existe)
-                    registerError.textContent = `Error: ${error.message}`;
-                    registerError.style.display = 'block';
-                    console.error("Error de registro:", error.message);
-                });
-            */
-
-            // --- SIMULACIÓN DE REGISTRO (SOLO PARA PRUEBAS DE INTERFAZ, REMOVER EN PRODUCCIÓN) ---
-            console.log(`Simulando registro de usuario: ${username} con contraseña: ${password}`);
-            alert('¡Cuenta simulada creada! En una aplicación real, esto se haría con un servidor.');
-            registerError.style.display = 'none';
-            registerSection.style.display = 'none';
-            loginSection.style.display = 'block'; // Volver a la pantalla de login
-            loginUsernameInput.value = username; // Precargar el usuario en el login
-            // --- FIN DE LÓGICA DE BACKEND PARA REGISTRO ---
-        });
-
-
-        // --- LÓGICA DEL CHAT ---
         sendButton.addEventListener('click', () => {
             sendMessage();
         });
@@ -398,31 +253,25 @@
 
         function sendMessage() {
             const messageText = messageInput.value.trim();
-            if (messageText === '' || currentUser === '') { // Asegúrate de que haya un usuario logeado
+            if (messageText === '') {
                 return;
             }
 
-            // --- INICIO DE LÓGICA DE BACKEND PARA ENVIAR MENSAJE ---
-            // Aquí es donde enviarías el mensaje a la base de datos en tiempo real.
-            // Ejemplo (pseudocódigo, NO FUNCIONA SIN BACKEND REAL):
-            /*
-            firebase.firestore().collection('messages').add({
-                user: currentUser,
+            // --- LÓGICA DE ENVÍO DE MENSAJE CON FIREBASE FIRESTORE ---
+            // Envía el mensaje a tu colección 'messages' en Firestore
+            db.collection("messages").add({
+                user: currentUserName,
                 text: messageText,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // Para ordenar por tiempo
             })
             .then(() => {
                 messageInput.value = ''; // Limpiar input después de enviar
             })
             .catch((error) => {
                 console.error("Error al enviar mensaje:", error);
+                alert("Error al enviar el mensaje. Revisa la consola para más detalles.");
             });
-            */
-
-            // SIMULACIÓN DE ENVÍO DE MENSAJE (Solo para mostrar la interfaz, REMOVER EN PRODUCCIÓN)
-            addMessageToChat(currentUser, messageText, true); // true indica que es un mensaje propio
-            messageInput.value = '';
-            // --- FIN DE LÓGICA DE BACKEND PARA ENVIAR MENSAJE ---
+            // --- FIN LÓGICA DE ENVÍO DE MENSAJE ---
         }
 
         function addMessageToChat(user, text, isOwnMessage) {
@@ -433,13 +282,14 @@
             } else {
                 messageDiv.classList.add('other');
             }
-            messageDiv.innerHTML = `<strong>${user}:</strong> ${text}`;
+            messageDiv.innerHTML = `<strong>${user}:</strong> <span>${text}</span>`;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll al final
         }
 
         function addMemberToList(member) {
-            // Verifica si el miembro ya está en la lista para evitar duplicados
+            // Simulación: en un chat real, la lista de miembros sería gestionada por el servidor
+            // Esta función solo agrega el usuario actual a la lista local.
             const existingMembers = Array.from(activeMembersList.children).map(li => li.textContent);
             if (!existingMembers.includes(member)) {
                 const memberLi = document.createElement('li');
@@ -448,29 +298,29 @@
             }
         }
 
-        // --- INICIO DE LÓGICA DE BACKEND PARA LISTENERS EN TIEMPO REAL ---
-        // Aquí es donde configurarías los listeners en tiempo real para recibir mensajes y la lista de miembros.
-        // Esto se llamaría DESPUÉS de un inicio de sesión exitoso.
-        // Ejemplo (pseudocódigo, NO FUNCIONA SIN BACKEND REAL):
-        /*
-        function setupRealtimeListeners() {
-            // Escuchar nuevos mensajes
-            firebase.firestore().collection('messages').orderBy('timestamp').onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        const message = change.doc.data();
-                        const isOwn = message.user === currentUser;
-                        addMessageToChat(message.user, message.text, isOwn);
-                    }
-                });
+        // --- LÓGICA DE ESCUCHA DE MENSAJES EN TIEMPO REAL CON FIREBASE FIRESTORE ---
+        // Escucha los mensajes en tiempo real desde tu colección 'messages'
+        db.collection("messages").orderBy("timestamp").onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const message = change.doc.data();
+                    const isOwn = message.user === currentUserName;
+                    addMessageToChat(message.user, message.text, isOwn);
+                }
+                // Si quieres manejar mensajes modificados o eliminados:
+                // if (change.type === "modified") { ... }
+                // if (change.type === "removed") { ... }
             });
+        }, (error) => {
+            console.error("Error al escuchar mensajes:", error);
+            alert("No se pudieron cargar los mensajes. Revisa la consola.");
+        });
+        // --- FIN LÓGICA DE ESCUCHA DE MENSAJES ---
 
-            // Escuchar cambios en la lista de miembros (más complejo, usualmente requiere un sistema de "presencia")
-            // firebase.firestore().collection('onlineUsers').onSnapshot(...)
-        }
-        */
-        // --- FIN DE LÓGICA DE BACKEND PARA LISTENERS ---
-
+        // NOTA: La lista de "Miembros Conectados" sigue siendo una simulación en este código.
+        // Para que sea real, necesitarías implementar un sistema de "presencia" en Firebase,
+        // que es un poco más avanzado pero posible. Implicaría que cada usuario al conectarse
+        // escriba su nombre en una colección de "usuarios activos" y la borre al desconectarse.
     </script>
 </body>
 </html>
