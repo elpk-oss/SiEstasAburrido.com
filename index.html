@@ -13,114 +13,52 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 420px;
-            margin: 60px auto;
+            max-width: 440px;
+            margin: 40px auto;
             background: #1a1a1a;
-            padding: 30px 20px 20px 20px;
+            padding: 30px 18px 22px 18px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.7);
             text-align: center;
         }
-        h1 {
-            margin-bottom: 12px;
-            font-size: 2.1em;
-            letter-spacing: 1px;
-        }
-        h2 {
-            margin-bottom: 13px;
-            color: #fff;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        input[type="text"],
-        input[type="password"] {
-            padding: 10px;
-            border-radius: 7px;
-            border: none;
-            background: #333;
-            color: #FFD600;
-            font-size: 1em;
+        h1 { margin-bottom: 13px; font-size: 2.1em; letter-spacing: 1px; }
+        h2 { margin-bottom: 13px; color: #fff; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input[type="text"], input[type="password"] {
+            padding: 10px; border-radius: 7px; border: none; background: #333; color: #FFD600; font-size: 1em;
         }
         button, .btn {
-            background: #FFD600;
-            color: #111;
-            border: none;
-            border-radius: 7px;
-            padding: 8px 12px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 7px;
-            margin-bottom: 0;
+            background: #FFD600; color: #111; border: none; border-radius: 7px;
+            padding: 8px 12px; font-size: 1em; font-weight: bold; cursor: pointer; margin-top: 7px; margin-bottom: 0;
             transition: background 0.2s;
         }
-        button:hover, .btn:hover {
-            background: #ffc400;
-        }
-        a {
-            color: #FFD600;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-        .error {
-            color: #ff3333;
-            font-size: 0.96em;
-            margin-top: 5px;
-            min-height: 20px;
-        }
-        #welcome {
-            color: #fff;
-        }
+        button:hover, .btn:hover { background: #ffc400; }
+        a { color: #FFD600; text-decoration: underline; cursor: pointer; }
+        .error { color: #ff3333; font-size: 0.96em; margin-top: 7px; min-height: 20px; }
+        #welcome { color: #fff; }
         #mod-panel, #user-panel {
-            background: #222;
-            margin-top: 26px;
-            padding: 15px 10px;
-            border-radius: 11px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
+            background: #222; margin-top: 24px; padding: 13px 7px; border-radius: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
-        #mod-panel h3, #user-panel h3 {
-            margin-top: 0;
-            color: #FFD600;
-            margin-bottom: 8px;
+        #mod-panel h3, #user-panel h3 { margin-top: 0; color: #FFD600; margin-bottom: 8px; }
+        #users-table { width: 100%; margin-top: 8px; border-collapse: collapse; color: #fff; font-size: 0.96em; }
+        #users-table th, #users-table td { padding: 4px 4px; border-bottom: 1px solid #444; }
+        #users-table th { background: #111; color: #FFD600; }
+        #users-table tr:last-child td { border-bottom: none; }
+        .mod-btn, .action-btn { padding: 3px 10px; border-radius: 5px; border: none; background: #FFD600; color: #111; cursor: pointer; font-size: 0.93em; margin: 0 2px 3px 2px; transition: background 0.2s; }
+        .mod-btn[disabled], .action-btn[disabled] { background: #666; color: #ccc; cursor: default; }
+        #chat-general, #chat-admin {
+            background: #191919; margin-top: 22px; padding: 13px 7px 10px 7px; border-radius: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            max-width: 99vw; margin-left:auto; margin-right:auto;
         }
-        #users-table {
-            width: 100%;
-            margin-top: 8px;
-            border-collapse: collapse;
-            color: #fff;
-            font-size: 0.96em;
-        }
-        #users-table th, #users-table td {
-            padding: 4px 4px;
-            border-bottom: 1px solid #444;
-        }
-        #users-table th {
-            background: #111;
-            color: #FFD600;
-        }
-        #users-table tr:last-child td {
-            border-bottom: none;
-        }
-        .mod-btn, .action-btn {
-            padding: 3px 10px;
-            border-radius: 5px;
-            border: none;
-            background: #FFD600;
-            color: #111;
-            cursor: pointer;
-            font-size: 0.93em;
-            margin: 0 2px 3px 2px;
-            transition: background 0.2s;
-        }
-        .mod-btn[disabled], .action-btn[disabled] {
-            background: #666;
-            color: #ccc;
-            cursor: default;
-        }
+        #chat-general h3, #chat-admin h3 { margin: 0 0 7px 0; color: #FFD600; }
+        .chat-messages { background: #222; border-radius: 7px; padding: 9px; max-height: 180px; overflow-y: auto; margin-bottom: 7px; text-align:left; }
+        .msg-user { color: #FFD600; font-weight: bold; }
+        .msg-admin { color: #61e7ff; font-weight: bold; }
+        .msg-hour { color: #b9b9b9; font-size:0.84em; margin-left:3px; }
+        .msg-content { color: #fff; }
+        .chat-form { display: flex; gap: 5px; margin-top: 5px; }
+        .chat-form input { flex: 1 1 auto; font-size: 1em; }
+        .success-msg { color: #5ef05e; font-size: 0.99em; margin: 7px 0 0 0; }
         #community-panel {
             background: #181818;
             border-radius: 7px;
@@ -191,15 +129,9 @@
             margin-top: 7px;
             padding: 5px;
         }
-        .success-msg {
-            color: #5ef05e;
-            font-size: 0.99em;
-            margin: 7px 0 0 0;
-        }
         @media (max-width: 500px) {
-            .container { max-width: 98vw; }
+            .container { max-width: 99vw; }
             #users-table, #users-table th, #users-table td { font-size: 0.89em; }
-            .member-row { font-size: 0.96em; }
         }
     </style>
 </head>
@@ -230,7 +162,6 @@
         </div>
         <div id="welcome" style="display:none;">
             <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
-            <p>Ya eres parte de la comunidad.</p>
             <button id="logout">Cerrar sesión</button>
 
             <div id="mod-panel" style="display:none;">
@@ -266,23 +197,47 @@
                 <h4>Miembros Destacados</h4>
                 <div id="members-list"></div>
             </div>
+
+            <div id="chat-general">
+                <h3>Chat General</h3>
+                <div class="chat-messages" id="chat-messages-general"></div>
+                <form class="chat-form" id="chat-form-general">
+                    <input type="text" id="chat-input-general" placeholder="Escribe un mensaje..." maxlength="200" autocomplete="off">
+                    <button type="submit">Enviar</button>
+                </form>
+            </div>
+            <div id="chat-admin" style="display:none;">
+                <h3>Chat Exclusivo Admins</h3>
+                <div class="chat-messages" id="chat-messages-admin"></div>
+                <form class="chat-form" id="chat-form-admin">
+                    <input type="text" id="chat-input-admin" placeholder="Mensaje solo para el staff..." maxlength="200" autocomplete="off">
+                    <button type="submit">Enviar</button>
+                </form>
+            </div>
         </div>
     </div>
-
-    <!-- Modal -->
     <div id="modal-bg" style="display:none;"></div>
-
     <script>
-        // ===== Simulación de datos y configuración =====
-        const botInviteLink = "https://discord.com/oauth2/authorize?client_id=BOT_ID&scope=bot"; // Cambia BOT_ID por el de tu bot
-        const discordInviteLink = "https://discord.gg/penarolcommunity"; // Cambia al de tu servidor
-
+        // ===== DATOS DE INICIO: USUARIOS REALES =====
         let users = [
             { username: "ElPk", password: "Peñarol2025", isMod: true, silenced: false, banned: false },
-            { username: "Ana", password: "1234", isMod: true, silenced: false, banned: false },
-            { username: "Lucas", password: "abcd", isMod: false, silenced: false, banned: false },
-            { username: "Valeria", password: "pepe", isMod: false, silenced: false, banned: false },
-            { username: "Martin", password: "martin", isMod: false, silenced: false, banned: false }
+            { username: "luisito", password: "luisito123", isMod: true, silenced: false, banned: false },
+            { username: "matias", password: "matias2024", isMod: false, silenced: false, banned: false },
+            { username: "fran", password: "franpass", isMod: false, silenced: false, banned: false },
+            { username: "pablo", password: "pablocapo", isMod: false, silenced: false, banned: false },
+            { username: "dani", password: "daniel2024", isMod: false, silenced: false, banned: false },
+            { username: "victor", password: "victorpass", isMod: false, silenced: false, banned: false },
+            { username: "cami", password: "camila2024", isMod: false, silenced: false, banned: false }
+        ];
+
+        // ===== CHATS (en memoria JS solo para demo) =====
+        let chatGeneral = [
+            { user: "ElPk", text: "¡Bienvenidos al chat general!", hour: getHora() },
+            { user: "luisito", text: "Hola a todos, ¡vamos arriba Peñarol!", hour: getHora() },
+            { user: "cami", text: "¡Hola, soy nueva! :)", hour: getHora() }
+        ];
+        let chatAdmin = [
+            { user: "ElPk", text: "Recuerden revisar los nuevos registros.", hour: getHora() }
         ];
 
         // ======= Elementos =======
@@ -312,6 +267,15 @@
         const modalBg = document.getElementById("modal-bg");
         const successMsgMod = document.getElementById("success-msg-mod");
 
+        // Chat
+        const chatGeneralMessages = document.getElementById("chat-messages-general");
+        const chatGeneralForm = document.getElementById("chat-form-general");
+        const chatGeneralInput = document.getElementById("chat-input-general");
+        const chatAdminDiv = document.getElementById("chat-admin");
+        const chatAdminMessages = document.getElementById("chat-messages-admin");
+        const chatAdminForm = document.getElementById("chat-form-admin");
+        const chatAdminInput = document.getElementById("chat-input-admin");
+
         // Variables de sesión
         let currentUser = null;
 
@@ -332,17 +296,19 @@
         // Login
         loginForm.onsubmit = (e) => {
             e.preventDefault();
-            const username = document.getElementById("login-username").value.trim();
+            const username = document.getElementById("login-username").value.trim().toLowerCase();
             const password = document.getElementById("login-password").value;
-            const user = users.find(u => u.username === username && u.password === password && !u.banned);
+            const user = users.find(u => u.username.toLowerCase() === username && u.password === password && !u.banned);
             if (user) {
                 loginDiv.style.display = "none";
                 welcomeDiv.style.display = "block";
-                userNameSpan.textContent = username;
+                userNameSpan.textContent = user.username;
                 loginError.textContent = "";
                 currentUser = user;
                 mostrarPaneles();
-            } else if(users.find(u => u.username === username && u.banned)) {
+                renderChatGeneral();
+                renderChatAdmin();
+            } else if(users.find(u => u.username.toLowerCase() === username && u.banned)) {
                 loginError.textContent = "Este usuario está baneado.";
             } else {
                 loginError.textContent = "Usuario o contraseña incorrectos.";
@@ -352,17 +318,17 @@
         // Registro
         registerForm.onsubmit = (e) => {
             e.preventDefault();
-            const username = document.getElementById("register-username").value.trim();
+            let username = document.getElementById("register-username").value.trim();
             const password = document.getElementById("register-password").value;
             if (!username || !password) {
                 registerError.textContent = "Completa todos los campos.";
                 return;
             }
-            if (users.find(u => u.username === username)) {
+            if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
                 registerError.textContent = "Ese usuario ya existe.";
                 return;
             }
-            if (username === "ElPk") {
+            if (username.toLowerCase() === "elpk") {
                 registerError.textContent = "No puedes registrar ese usuario.";
                 return;
             }
@@ -371,6 +337,7 @@
             registerDiv.style.display = "none";
             loginDiv.style.display = "block";
             loginError.textContent = "Usuario registrado. Ahora puedes entrar.";
+            chatGeneral.push({ user: "ElPk", text: `¡Bienvenido/a ${username} a la comunidad!`, hour: getHora() });
         };
 
         // Logout
@@ -381,21 +348,23 @@
             registerForm.reset();
             modPanel.style.display = "none";
             userPanel.style.display = "none";
+            chatAdminDiv.style.display = "none";
             successMsgMod.textContent = "";
             currentUser = null;
         };
 
-        // Paneles
         function mostrarPaneles() {
             memberCount.textContent = users.filter(u => !u.banned).length;
             renderCommunity();
             if (currentUser && currentUser.isMod) {
                 modPanel.style.display = "block";
                 userPanel.style.display = "none";
+                chatAdminDiv.style.display = "block";
                 renderUsuarios();
             } else {
                 modPanel.style.display = "none";
                 userPanel.style.display = "block";
+                chatAdminDiv.style.display = "none";
                 mostrarPerfil();
             }
         }
@@ -426,7 +395,7 @@
                     btnDel.onclick = () => eliminarUsuario(idx);
                     tdAcc.appendChild(btnDel);
 
-                    // Mod
+                    // Botón promover/remover moderador
                     const btnMod = document.createElement("button");
                     btnMod.className = "mod-btn";
                     if (u.isMod) {
@@ -527,7 +496,7 @@
 
         // Botón "Agregar mi bot"
         btnBotInvite.onclick = () => {
-            copiarAlPortapapeles(botInviteLink, "¡Link del bot copiado! Invítalo a tu servidor si eres admin.");
+            copiarAlPortapapeles("https://discord.com/oauth2/authorize?client_id=BOT_ID&scope=bot", "¡Link del bot copiado! Invítalo a tu servidor si eres admin.");
         };
         // Botón "Enviar anuncio"
         btnAnuncio.onclick = () => {
@@ -538,7 +507,7 @@
         };
         // Botón Discord
         btnDiscordInvite.onclick = () => {
-            copiarAlPortapapeles(discordInviteLink, "¡Link de Discord copiado! Únete a la comunidad.");
+            copiarAlPortapapeles("https://discord.gg/penarolcommunity", "¡Link de Discord copiado! Únete a la comunidad.");
         };
         // Editar contraseña
         btnEditPass.onclick = () => {
@@ -573,7 +542,6 @@
             };
         };
 
-        // Copiar links
         function copiarAlPortapapeles(texto, msg) {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(texto).then(() => {
@@ -584,7 +552,6 @@
             }
         }
 
-        // Modal
         function mostrarModal(html, autoclose) {
             modalBg.innerHTML = `<div class="modal"><span class="close" onclick="cerrarModal()">&times;</span>${html}</div>`;
             modalBg.style.display = "flex";
@@ -596,6 +563,55 @@
         }
         window.cerrarModal = cerrarModal;
 
+        // CHAT GENERAL
+        chatGeneralForm.onsubmit = (e) => {
+            e.preventDefault();
+            let msg = chatGeneralInput.value.trim();
+            if(msg && currentUser && !currentUser.silenced) {
+                chatGeneral.push({ user: currentUser.username, text: msg, hour: getHora() });
+                renderChatGeneral();
+                chatGeneralInput.value = "";
+            }
+        };
+        function renderChatGeneral() {
+            chatGeneralMessages.innerHTML = "";
+            chatGeneral.slice(-30).forEach(msg => {
+                let userClass = isAdmin(msg.user) ? "msg-admin" : "msg-user";
+                chatGeneralMessages.innerHTML += `<div><span class="${userClass}">${msg.user}</span>
+                <span class="msg-hour">${msg.hour}</span>: <span class="msg-content">${escapeHtml(msg.text)}</span></div>`;
+            });
+            chatGeneralMessages.scrollTop = chatGeneralMessages.scrollHeight;
+        }
+
+        // CHAT ADMIN
+        chatAdminForm.onsubmit = (e) => {
+            e.preventDefault();
+            let msg = chatAdminInput.value.trim();
+            if(msg && currentUser && currentUser.isMod) {
+                chatAdmin.push({ user: currentUser.username, text: msg, hour: getHora() });
+                renderChatAdmin();
+                chatAdminInput.value = "";
+            }
+        };
+        function renderChatAdmin() {
+            chatAdminMessages.innerHTML = "";
+            chatAdmin.slice(-30).forEach(msg => {
+                chatAdminMessages.innerHTML += `<div><span class="msg-admin">${msg.user}</span>
+                <span class="msg-hour">${msg.hour}</span>: <span class="msg-content">${escapeHtml(msg.text)}</span></div>`;
+            });
+            chatAdminMessages.scrollTop = chatAdminMessages.scrollHeight;
+        }
+
+        function isAdmin(username) {
+            let u = users.find(u => u.username === username);
+            return u && u.isMod;
+        }
+        function getHora() {
+            let d = new Date();
+            return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+        }
+        function escapeHtml(t) { return t.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
         // Enter en login/registro
         loginForm.querySelectorAll("input").forEach(input => {
             input.onkeypress = (e) => { if (e.key === "Enter") loginForm.onsubmit(e); };
@@ -604,14 +620,12 @@
             input.onkeypress = (e) => { if (e.key === "Enter") registerForm.onsubmit(e); };
         });
         document.getElementById("register-username").addEventListener("input", (e) => {
-            if (e.target.value === "ElPk") {
+            if (e.target.value.toLowerCase() === "elpk") {
                 registerError.textContent = "No puedes registrar ese usuario.";
             } else {
                 registerError.textContent = "";
             }
         });
-
-        // Mostrar panel si recarga y sigue la sesión (solo memoria)
     </script>
 </body>
 </html>
