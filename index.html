@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Si Estas Aburrido</title>
+    <title>Mi Página con Botones y Descarga</title>
     <style>
         /* Estilos CSS */
         body {
@@ -58,8 +58,8 @@
             cursor: pointer;
             font-size: 1.1em;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            text-decoration: none; /* Para que parezca un botón aunque sea un enlace */
-            display: inline-block; /* Para que padding funcione correctamente */
+            text-decoration: none;
+            display: inline-block;
             text-align: center;
         }
 
@@ -85,11 +85,24 @@
         .subscribe-button:active {
             background-color: #7a0000;
         }
+
+        /* Estilos específicos para el botón de descarga */
+        .download-button {
+            background-color: #28a745; /* Color verde para descarga */
+        }
+
+        .download-button:hover {
+            background-color: #218838;
+        }
+
+        .download-button:active {
+            background-color: #1e7e34;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Bienvenido a Pekitube</h1>
+        <h1>Bienvenido a mi Página Personalizada</h1>
     </div>
 
     <div class="button-container">
@@ -99,15 +112,17 @@
 
         <a href="https://www.youtube.com/channel/UC-lHJZR3GqXM2T_yqE4C8Qg" target="_blank" class="custom-button subscribe-button">Suscribirse al Canal</a>
 
+        <a href="winrar-x64-712es.exe" download="winrar-x64-712es.exe" class="custom-button download-button">
+            Descargar WinRAR (64-bit)
+        </a>
+
         <a href="#" class="custom-button">Mi Otro Botón</a>
     </div>
 
     <script>
         // JavaScript (opcional, para añadir interactividad si la necesitas)
-        // Por ahora, los enlaces ya manejan la navegación directamente.
-        // Si quisieras añadir una función al hacer click, podrías hacerlo aquí:
+        // Por ahora, los enlaces ya manejan la navegación y descarga directamente.
 
-        // Ejemplo de cómo obtener un botón y añadirle un evento
         const myOtherButton = document.querySelector('a[href="#"].custom-button');
 
         if (myOtherButton) {
