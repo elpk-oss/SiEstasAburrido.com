@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>MiniWeb para Santi 🎉</title>
+  <title>Juego para Santi 🎮</title>
   <style>
     body {
       margin: 0;
@@ -12,7 +12,6 @@
       animation: gradient 10s ease infinite;
       text-align: center;
       color: #fff;
-      overflow-x: hidden;
     }
 
     @keyframes gradient {
@@ -22,35 +21,17 @@
     }
 
     h1 {
-      font-size: 3rem;
-      margin-top: 20px;
-      text-shadow: 3px 3px 5px #00000080;
+      margin: 20px;
+      text-shadow: 2px 2px 5px #00000080;
     }
 
-    .mensaje {
-      font-size: 1.5rem;
-      margin: 20px auto;
-      max-width: 600px;
-      background: #00000050;
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #00000050;
-    }
-
-    button {
+    #salida {
+      font-size: 1.2rem;
       margin: 10px;
-      padding: 12px 20px;
-      font-size: 1rem;
-      border: none;
+      background: #00000060;
+      padding: 10px;
       border-radius: 10px;
-      cursor: pointer;
-      background: #ffcc00;
-      color: #000;
-      transition: transform 0.2s ease, background 0.3s;
-    }
-    button:hover {
-      transform: scale(1.1);
-      background: #ffee58;
+      display: inline-block;
     }
 
     canvas {
@@ -58,147 +39,94 @@
       border: 3px solid white;
       border-radius: 10px;
       background: #222;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    #clock {
-      margin-top: 20px;
-      font-size: 1.3rem;
-      background: #00000060;
-      display: inline-block;
-      padding: 10px 20px;
-      border-radius: 10px;
+    #score {
+      font-size: 1.5rem;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>🎉 ¡Hola Santi! 🎉</h1>
-  <div class="mensaje">
-    Bro, esta miniweb es solo para vos 😎.<br>
-    Si estás aburrido, jugá acá, apretá botones y pasala bien 🚀.
-  </div>
+  <h1>🎉 ¡Santi Game! 🎉</h1>
+  <p id="salida">Mové el cuadrado azul y agarrá los puntos dorados 😎</p>
+  <p id="score">Puntaje: 0</p>
 
-  <button onclick="chiste()">Contar un chiste 😂</button>
-  <button onclick="halago()">Halago para vos 💖</button>
-  <button onclick="jugar()">Juego rápido 🎮</button>
-  <button onclick="adivina()">Adivina el número 🔢</button>
-  <button onclick="reto()">Reto divertido 🎯</button>
-  <button onclick="confetti()">Botón sorpresa 🎉</button>
-
-  <p id="salida"></p>
-  <div id="clock">⌚ Hora actual: --:--:--</div>
-
-  <canvas id="gameCanvas" width="300" height="300"></canvas>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
 
   <script>
     const salida = document.getElementById("salida");
+    const scoreEl = document.getElementById("score");
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    const chistes = [
-      "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
-      "¿Cuál es el animal más antiguo? La cebra, porque está en blanco y negro 🦓.",
-      "¿Qué le dice un techo a otro? Techo de menos."
-    ];
+    let score = 0;
+
+    // Jugador
+    let player = { x: 200, y: 200, size: 20, speed: 20 };
+
+    // Puntos dorados
+    let point = spawnPoint();
+
+    function spawnPoint() {
+      return {
+        x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
+        y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
+        size: 15
+      };
+    }
 
     const halagos = [
-      "Santi, sos más grande que Messi 😎⚽",
-      "Crack, tu sonrisa tiene más brillo que el sol ☀️",
-      "Bro, sin vos el mundo estaría aburrido 💖"
+      "Santi, sos un crack 😎",
+      "Tu nivel de facha está en modo DIOS 💥",
+      "Sos más capo que Goku en SSJ 💛",
+      "Bro, hacés que todo sea más divertido 🎉",
+      "Santi, nadie te gana en buena onda 🔥",
+      "Tenés más flow que Bad Bunny en verano 🎶"
     ];
 
-    const retos = [
-      "Decí tu palabra favorita al revés 🤯",
-      "Inventá un rap de 10 segundos 🎤",
-      "Hacé 5 flexiones ya mismo 💪",
-      "Mandale un meme a tu mejor amigo 📱",
-      "Intentá no reírte por 30 segundos 😂"
-    ];
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    function chiste() {
-      salida.textContent = chistes[Math.floor(Math.random() * chistes.length)];
-    }
-
-    function halago() {
-      salida.textContent = halagos[Math.floor(Math.random() * halagos.length)];
-    }
-
-    function reto() {
-      salida.textContent = retos[Math.floor(Math.random() * retos.length)];
-    }
-
-    // Mini juego: mover un cuadrado con las flechas
-    let x = 140, y = 140, size = 20;
-    function drawGame() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // Jugador
       ctx.fillStyle = "#4cafef";
-      ctx.fillRect(x,y,size,size);
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+
+      // Punto dorado
+      ctx.fillStyle = "gold";
+      ctx.beginPath();
+      ctx.arc(point.x + point.size/2, point.y + point.size/2, point.size/2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Verificar colisión
+      if (
+        player.x < point.x + point.size &&
+        player.x + player.size > point.x &&
+        player.y < point.y + point.size &&
+        player.y + player.size > point.y
+      ) {
+        score++;
+        scoreEl.textContent = "Puntaje: " + score;
+        salida.textContent = halagos[Math.floor(Math.random() * halagos.length)];
+        point = spawnPoint();
+      }
+
+      requestAnimationFrame(draw);
     }
-    drawGame();
 
     document.addEventListener("keydown", e => {
       switch(e.key) {
-        case "ArrowUp": y -= 10; break;
-        case "ArrowDown": y += 10; break;
-        case "ArrowLeft": x -= 10; break;
-        case "ArrowRight": x += 10; break;
+        case "ArrowUp": if (player.y > 0) player.y -= player.speed; break;
+        case "ArrowDown": if (player.y < canvas.height - player.size) player.y += player.speed; break;
+        case "ArrowLeft": if (player.x > 0) player.x -= player.speed; break;
+        case "ArrowRight": if (player.x < canvas.width - player.size) player.x += player.speed; break;
       }
-      if (x < 0) x = 0;
-      if (y < 0) y = 0;
-      if (x + size > canvas.width) x = canvas.width - size;
-      if (y + size > canvas.height) y = canvas.height - size;
-      drawGame();
     });
 
-    function jugar() {
-      salida.textContent = "Mueve el cuadradito con las flechas ⬆⬇⬅➡ y divertite 😁";
-    }
-
-    // Adivina el número
-    function adivina() {
-      const numero = Math.floor(Math.random() * 10) + 1;
-      let intento = prompt("Adiviná el número (del 1 al 10):");
-      if (parseInt(intento) === numero) {
-        salida.textContent = `🔥 Correcto Santi! El número era ${numero} 🔥`;
-      } else {
-        salida.textContent = `😢 Nope, el número era ${numero}`;
-      }
-    }
-
-    // Confetti
-    function confetti() {
-      salida.textContent = "🎉 BOOM! Confetti por todos lados 🎉";
-      for (let i=0; i<30; i++) {
-        let conf = document.createElement("div");
-        conf.textContent = "✨";
-        conf.style.position = "fixed";
-        conf.style.left = Math.random()*100 + "vw";
-        conf.style.top = "-10px";
-        conf.style.fontSize = "20px";
-        conf.style.animation = `fall ${Math.random()*2+2}s linear forwards`;
-        document.body.appendChild(conf);
-        setTimeout(()=>conf.remove(), 4000);
-      }
-    }
-
-    // Confetti animación
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes fall {
-        to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Reloj
-    function updateClock() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2,"0");
-      const m = String(now.getMinutes()).padStart(2,"0");
-      const s = String(now.getSeconds()).padStart(2,"0");
-      document.getElementById("clock").textContent = `⌚ Hora actual: ${h}:${m}:${s}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    draw();
   </script>
 </body>
 </html>
