@@ -1,136 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página con Botones y Descarga</title>
-    <style>
-        /* Estilos CSS */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <title>MiniWeb para Santi 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", sans-serif;
+      background: linear-gradient(135deg, #ff7eb3, #65d6ce, #ffe75e);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      text-align: center;
+      color: #fff;
+      overflow-x: hidden;
+    }
 
-        .header {
-            width: 100%;
-            max-width: 900px;
-            background-color: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
 
-        .header h1 {
-            color: #333;
-            margin: 0;
-            font-size: 2em;
-        }
+    h1 {
+      font-size: 3rem;
+      margin-top: 20px;
+      text-shadow: 3px 3px 5px #00000080;
+    }
 
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-            max-width: 900px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .mensaje {
+      font-size: 1.5rem;
+      margin: 20px auto;
+      max-width: 600px;
+      background: #00000050;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00000050;
+    }
 
-        .custom-button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ffcc00;
+      color: #000;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #ffee58;
+    }
 
-        .custom-button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
+    canvas {
+      margin-top: 20px;
+      border: 3px solid white;
+      border-radius: 10px;
+      background: #222;
+    }
 
-        .custom-button:active {
-            background-color: #004085;
-            transform: translateY(0);
-        }
-
-        /* Estilos de ejemplo para simular un botón de YouTube "Suscribirse" */
-        .subscribe-button {
-            background-color: #cc0000;
-        }
-
-        .subscribe-button:hover {
-            background-color: #a30000;
-        }
-
-        .subscribe-button:active {
-            background-color: #7a0000;
-        }
-
-        /* Estilos específicos para el botón de descarga */
-        .download-button {
-            background-color: #28a745; /* Color verde para descarga */
-        }
-
-        .download-button:hover {
-            background-color: #218838;
-        }
-
-        .download-button:active {
-            background-color: #1e7e34;
-        }
-    </style>
+    #clock {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      background: #00000060;
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Bienvenido a mi Página Personalizada</h1>
-    </div>
+  <h1>🎉 ¡Hola Santi! 🎉</h1>
+  <div class="mensaje">
+    Bro, esta miniweb es solo para vos 😎.<br>
+    Si estás aburrido, jugá acá, apretá botones y pasala bien 🚀.
+  </div>
 
-    <div class="button-container">
-        <a href="https://www.google.com" target="_blank" class="custom-button">Ir a Google</a>
+  <button onclick="chiste()">Contar un chiste 😂</button>
+  <button onclick="halago()">Halago para vos 💖</button>
+  <button onclick="jugar()">Juego rápido 🎮</button>
+  <button onclick="adivina()">Adivina el número 🔢</button>
+  <button onclick="reto()">Reto divertido 🎯</button>
+  <button onclick="confetti()">Botón sorpresa 🎉</button>
 
-        <a href="https://www.wikipedia.org" target="_blank" class="custom-button">Visitar Wikipedia</a>
+  <p id="salida"></p>
+  <div id="clock">⌚ Hora actual: --:--:--</div>
 
-        <a href="https://www.youtube.com/channel/UC-lHJZR3GqXM2T_yqE4C8Qg" target="_blank" class="custom-button subscribe-button">Suscribirse al Canal</a>
+  <canvas id="gameCanvas" width="300" height="300"></canvas>
 
-        <a href="winrar-x64-712es.exe" download="winrar-x64-712es.exe" class="custom-button download-button">
-            Descargar WinRAR (64-bit)
-        </a>
+  <script>
+    const salida = document.getElementById("salida");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-        <a href="#" class="custom-button">Mi Otro Botón</a>
-    </div>
+    const chistes = [
+      "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+      "¿Cuál es el animal más antiguo? La cebra, porque está en blanco y negro 🦓.",
+      "¿Qué le dice un techo a otro? Techo de menos."
+    ];
 
-    <script>
-        // JavaScript (opcional, para añadir interactividad si la necesitas)
-        // Por ahora, los enlaces ya manejan la navegación y descarga directamente.
+    const halagos = [
+      "Santi, sos más grande que Messi 😎⚽",
+      "Crack, tu sonrisa tiene más brillo que el sol ☀️",
+      "Bro, sin vos el mundo estaría aburrido 💖"
+    ];
 
-        const myOtherButton = document.querySelector('a[href="#"].custom-button');
+    const retos = [
+      "Decí tu palabra favorita al revés 🤯",
+      "Inventá un rap de 10 segundos 🎤",
+      "Hacé 5 flexiones ya mismo 💪",
+      "Mandale un meme a tu mejor amigo 📱",
+      "Intentá no reírte por 30 segundos 😂"
+    ];
 
-        if (myOtherButton) {
-            myOtherButton.addEventListener('click', function(event) {
-                // event.preventDefault(); // Descomenta esta línea si no quieres que el enlace navegue a '#'
-                alert('¡Hiciste clic en "Mi Otro Botón"!');
-            });
-        }
-    </script>
+    function chiste() {
+      salida.textContent = chistes[Math.floor(Math.random() * chistes.length)];
+    }
+
+    function halago() {
+      salida.textContent = halagos[Math.floor(Math.random() * halagos.length)];
+    }
+
+    function reto() {
+      salida.textContent = retos[Math.floor(Math.random() * retos.length)];
+    }
+
+    // Mini juego: mover un cuadrado con las flechas
+    let x = 140, y = 140, size = 20;
+    function drawGame() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#4cafef";
+      ctx.fillRect(x,y,size,size);
+    }
+    drawGame();
+
+    document.addEventListener("keydown", e => {
+      switch(e.key) {
+        case "ArrowUp": y -= 10; break;
+        case "ArrowDown": y += 10; break;
+        case "ArrowLeft": x -= 10; break;
+        case "ArrowRight": x += 10; break;
+      }
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x + size > canvas.width) x = canvas.width - size;
+      if (y + size > canvas.height) y = canvas.height - size;
+      drawGame();
+    });
+
+    function jugar() {
+      salida.textContent = "Mueve el cuadradito con las flechas ⬆⬇⬅➡ y divertite 😁";
+    }
+
+    // Adivina el número
+    function adivina() {
+      const numero = Math.floor(Math.random() * 10) + 1;
+      let intento = prompt("Adiviná el número (del 1 al 10):");
+      if (parseInt(intento) === numero) {
+        salida.textContent = `🔥 Correcto Santi! El número era ${numero} 🔥`;
+      } else {
+        salida.textContent = `😢 Nope, el número era ${numero}`;
+      }
+    }
+
+    // Confetti
+    function confetti() {
+      salida.textContent = "🎉 BOOM! Confetti por todos lados 🎉";
+      for (let i=0; i<30; i++) {
+        let conf = document.createElement("div");
+        conf.textContent = "✨";
+        conf.style.position = "fixed";
+        conf.style.left = Math.random()*100 + "vw";
+        conf.style.top = "-10px";
+        conf.style.fontSize = "20px";
+        conf.style.animation = `fall ${Math.random()*2+2}s linear forwards`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 4000);
+      }
+    }
+
+    // Confetti animación
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes fall {
+        to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Reloj
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,"0");
+      const m = String(now.getMinutes()).padStart(2,"0");
+      const s = String(now.getSeconds()).padStart(2,"0");
+      document.getElementById("clock").textContent = `⌚ Hora actual: ${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
 </body>
 </html>
