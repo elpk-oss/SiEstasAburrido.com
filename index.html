@@ -1,466 +1,269 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MiniWeb para Santi — Todo en 1</title>
-<style>
-  :root{
-    --bg1:#ff7eb3; --bg2:#65d6ce; --bg3:#ffe75e;
-    --card: rgba(0,0,0,0.45);
-    --accent: #ffcc00;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: "Comic Sans MS", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
-    background-size: 400% 400%;
-    animation: g 12s ease infinite;
-    color:#fff;
-    -webkit-font-smoothing:antialiased;
-    text-align:center;
-    min-height:100vh;
-  }
-  @keyframes g{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-  header{display:flex;gap:12px;align-items:center;padding:14px;justify-content:center;flex-wrap:wrap}
-  .logo{font-weight:800;padding:8px 14px;border-radius:12px;background:linear-gradient(90deg,#7c5cff,#ff5c8a);box-shadow:0 8px 30px rgba(0,0,0,0.25)}
-  nav{display:flex;gap:8px;flex-wrap:wrap}
-  .menu-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;cursor:pointer;color:#fff;font-weight:700}
-  .menu-btn.active{box-shadow:0 8px 30px rgba(0,0,0,0.35);transform:translateY(-3px)}
-  main{max-width:980px;margin:18px auto;padding:18px}
-  .card{background:var(--card);padding:16px;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.3);margin-bottom:14px}
-  h1{margin:6px 0 12px;font-size:2.2rem}
-  .lead{color:rgba(255,255,255,0.9);font-size:1rem;margin-bottom:10px}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
-  button{cursor:pointer;border:none;padding:10px 14px;border-radius:10px;background:var(--accent);color:#000;font-weight:800;transition:transform .15s}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff}
-  button:hover{transform:scale(1.05)}
-  #salida{min-height:48px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;padding:8px;border-radius:8px;background:rgba(0,0,0,0.25)}
-  #clock{display:inline-block;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.25);font-weight:700}
-  /* canvas */
-  .canvas-wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
-  canvas{background:#111;border-radius:10px;border:3px solid rgba(255,255,255,0.08)}
-  /* game area */
-  .game-area{display:none}
-  .show{display:block}
-  .score{font-size:1.3rem;margin:8px 0;font-weight:800}
-  /* small helpers */
-  .hint{font-size:0.95rem;color:rgba(255,255,255,0.85)}
-  .confetti-emoji{position:fixed;z-index:9999;pointer-events:none;font-size:20px}
-  /* responsive */
-  @media(max-width:720px){
-    h1{font-size:1.6rem}
-    canvas{width:92%}
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>MiniWeb para Santi 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", sans-serif;
+      background: linear-gradient(135deg, #ff7eb3, #65d6ce, #ffe75e);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      text-align: center;
+      color: #fff;
+    }
+
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      margin: 20px;
+      text-shadow: 2px 2px 5px #00000080;
+    }
+
+    .mensaje {
+      font-size: 1.3rem;
+      margin: 15px auto;
+      max-width: 600px;
+      background: #00000050;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00000050;
+    }
+
+    button {
+      margin: 8px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ffcc00;
+      color: #000;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #ffee58;
+    }
+
+    canvas {
+      border: 3px solid white;
+      border-radius: 10px;
+      background: #222;
+      display: block;
+      margin: 20px auto;
+    }
+
+    #clock {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      background: #00000060;
+      display: inline-block;
+      padding: 8px 15px;
+      border-radius: 8px;
+    }
+
+    #gameArea {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <h1>🎉 ¡Hola Santi! 🎉</h1>
+  <div class="mensaje">
+    Bro, esta miniweb es solo para vos 😎.<br>
+    Si estás aburrido, apretá botones y pasala bien 🚀.
+  </div>
 
-<header>
-  <div class="logo">SANTI HUB</div>
-  <nav id="menu">
-    <button class="menu-btn active" data-target="home">Home</button>
-    <button class="menu-btn" data-target="fun">Diversión</button>
-    <button class="menu-btn" data-target="santigame">SantiGame</button>
-    <button class="menu-btn" data-target="extras">Extras</button>
-  </nav>
-</header>
+  <div id="menuArea">
+    <button onclick="chiste()">Contar un chiste 😂</button>
+    <button onclick="halago()">Halago para vos 💖</button>
+    <button onclick="reto()">Reto divertido 🎯</button>
+    <button onclick="adivina()">Adivina el número 🔢</button>
+    <button onclick="confetti()">Botón sorpresa 🎉</button>
+    <button onclick="iniciarJuego()">SantiGame 🎮</button>
 
-<main>
-  <!-- HOME -->
-  <section id="home" class="card show">
-    <h1>¡Hola Santi! 🎉</h1>
-    <p class="lead">Esta miniweb está hecha pa' vos: chistes, retos, halagos, juegos y más. Tocá lo que quieras y divertite.</p>
-    <div class="controls">
-      <button onclick="chiste()">Contar un chiste 😂</button>
-      <button onclick="halago()">Halago 💖</button>
-      <button onclick="reto()">Reto 🎯</button>
-      <button onclick="confetti()">Sorpresa 🎉</button>
-      <button onclick="goTo('santigame')">Ir a SantiGame ▶️</button>
-    </div>
-    <div id="salida" class="hint">Presioná botones para ver cosas cool</div>
-    <div style="margin-top:12px;">
-      <span id="clock" aria-live="polite">⌚ Hora actual: --:--:--</span>
-    </div>
-  </section>
+    <p id="salida"></p>
+    <div id="clock">⌚ Hora actual: --:--:--</div>
+  </div>
 
-  <!-- FUN -->
-  <section id="fun" class="card">
-    <h2>Panel de Diversión</h2>
-    <div class="controls">
-      <button onclick="adivina()">Adivina el número 🔢</button>
-      <button onclick="startQuickGame()">Mini juego (cuadrado) 🎮</button>
-      <button onclick="openSantiGame()">Abrir SantiGame (mejor) ✨</button>
-      <button onclick="confetti()">Confetti 🎊</button>
-    </div>
-    <p class="hint">Adivina, juega y mandá retos — todo para que no te aburras.</p>
-  </section>
+  <!-- Área del juego -->
+  <div id="gameArea">
+    <h2>🎮 SantiGame 🎮</h2>
+    <p id="salidaJuego">Mové el cuadrado azul y agarrá los puntos dorados 😎</p>
+    <p id="score">Puntaje: 0</p>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <button onclick="salirJuego()">⬅️ Volver al menú</button>
+  </div>
 
-  <!-- SANTIGAME - la sección del juego principal -->
-  <section id="santigame" class="card game-area">
-    <h2>🎮 SantiGame — Atrapa puntos dorados</h2>
-    <p class="hint">Mové el cuadrado azul con las flechas ⬆⬇⬅➡. Cada punto dorado te da +1 y te suelta un halago random ✨</p>
-    <div class="score" id="score">Puntaje: 0</div>
-    <canvas id="gameCanvas" width="420" height="420"></canvas>
-    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <button onclick="resetGame()" class="ghost">Reiniciar</button>
-      <button onclick="goTo('home')" class="ghost">Volver al Hub</button>
-    </div>
-    <div id="gameMsg" style="margin-top:10px" class="hint"></div>
-  </section>
+  <script>
+    const salida = document.getElementById("salida");
+    const salidaJuego = document.getElementById("salidaJuego");
+    const scoreEl = document.getElementById("score");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-  <!-- EXTRAS -->
-  <section id="extras" class="card">
-    <h2>Extras</h2>
-    <div class="controls">
-      <button onclick="showPaint()">Mini Paint (rápido)</button>
-      <button onclick="openSantiGame()">Ir al SantiGame</button>
-    </div>
-    <div id="extraArea" style="margin-top:12px"></div>
-  </section>
-</main>
+    // ===== FUNCIONES NORMALES =====
+    const chistes = [
+      "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+      "¿Cuál es el animal más antiguo? La cebra, porque está en blanco y negro 🦓.",
+      "¿Qué le dice un techo a otro? Techo de menos."
+    ];
 
-<script>
-  // ---------- MENU / NAV ----------
-  const menuBtns = document.querySelectorAll('.menu-btn');
-  const sections = { home: document.getElementById('home'), fun: document.getElementById('fun'), santigame: document.getElementById('santigame'), extras: document.getElementById('extras') };
+    const halagosNormales = [
+      "Santi, sos más grande que Messi 😎⚽",
+      "Crack, tu sonrisa tiene más brillo que el sol ☀️",
+      "Bro, sin vos el mundo estaría aburrido 💖"
+    ];
 
-  function setActive(btn){
-    menuBtns.forEach(b=>b.classList.toggle('active', b===btn));
-  }
-  document.getElementById('menu').addEventListener('click', e=>{
-    const btn = e.target.closest('button[data-target]');
-    if(!btn) return;
-    const target = btn.dataset.target;
-    goTo(target);
-    setActive(btn);
-  });
+    const retos = [
+      "Decí tu palabra favorita al revés 🤯",
+      "Inventá un rap de 10 segundos 🎤",
+      "Hacé 5 flexiones ya mismo 💪",
+      "Mandale un meme a tu mejor amigo 📱",
+      "Intentá no reírte por 30 segundos 😂"
+    ];
 
-  function goTo(sectionId){
-    // hide all except target
-    for(const k in sections){ sections[k].classList.remove('show'); sections[k].classList.add('hidden'); sections[k].style.display='none'; }
-    const sec = sections[sectionId];
-    sec.classList.add('show'); sec.style.display='block';
-    // special: if santigame, start game focus
-    if(sectionId === 'santigame'){ openSantiGame(); scrollIntoViewSmooth(sec); }
-    else scrollIntoViewSmooth(sec);
-  }
-  function scrollIntoViewSmooth(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); }
-
-  // initial state
-  goTo('home');
-
-  // ---------- CLOCK ----------
-  function updateClock(){
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    document.getElementById('clock').textContent = `⌚ Hora actual: ${h}:${m}:${s}`;
-  }
-  setInterval(updateClock,1000); updateClock();
-
-  // ---------- CONTENT: chistes, halagos, retos ----------
-  const chistes = [
-    "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
-    "— ¿Cuál es el animal más antiguo? — La cebra, porque está en blanco y negro 🦓.",
-    "— ¿Qué le dice un techo a otro? — Techo de menos.",
-    "¿Por qué el libro fue al hospital? Porque tenía las páginas en blanco 🤕"
-  ];
-  const halagos = [
-    "Santi, sos un crack 😎",
-    "Tu nivel de facha está en modo DIOS 💥",
-    "Tenés más flow que el verano 🔥",
-    "Santi, sos el alma de la fiesta 🎉",
-    "Nadie arma tan buena onda como vos 😁",
-    "Tu sonrisa ilumina todo 💡"
-  ];
-  const retos = [
-    "Decí tu palabra favorita al revés 🤯",
-    "Inventá un rap de 10 segundos 🎤",
-    "Hacé 5 flexiones ya mismo 💪",
-    "Mandale un meme a tu mejor amigo 📱",
-    "Intentá no reírte por 30 segundos 😂"
-  ];
-
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function chiste(){ document.getElementById('salida').textContent = rand(chistes); }
-  function halago(){ document.getElementById('salida').textContent = rand(halagos); }
-  function reto(){ document.getElementById('salida').textContent = rand(retos); }
-
-  // ---------- ADIVINA EL NÚMERO ----------
-  function adivina(){
-    const numero = Math.floor(Math.random()*10)+1;
-    const intento = prompt("Adiviná el número (1-10):");
-    if(intento === null){ document.getElementById('salida').textContent = "Cancelado."; return; }
-    if(parseInt(intento) === numero) document.getElementById('salida').textContent = `🔥 Correcto Santi! Era ${numero} 🔥`;
-    else document.getElementById('salida').textContent = `😢 Nope, era ${numero}. Seguí intentando!`;
-  }
-
-  // ---------- CONFETTI (emoji) ----------
-  function confetti(){
-    document.getElementById('salida').textContent = "🎉 BOOM! Confetti incoming!";
-    for(let i=0;i<40;i++){
-      const e = document.createElement('div');
-      e.className='confetti-emoji';
-      e.textContent = ["✨","🎉","💥","🍾","🌟"][Math.floor(Math.random()*5)];
-      e.style.left = Math.random()*100 + 'vw';
-      e.style.top = '-5vh';
-      e.style.fontSize = (12 + Math.random()*28) + 'px';
-      e.style.opacity = 1;
-      e.style.transform = `rotate(${Math.random()*360}deg)`;
-      document.body.appendChild(e);
-      const fall = 2000 + Math.random()*2500;
-      e.animate([
-        { transform: `translateY(0) rotate(0deg)`, opacity:1 },
-        { transform: `translateY(${110 + Math.random()*40}vh) rotate(720deg)`, opacity:0.1 }
-      ], { duration: fall, easing: 'linear' });
-      setTimeout(()=>e.remove(), fall+80);
+    function chiste() {
+      salida.textContent = chistes[Math.floor(Math.random() * chistes.length)];
     }
-  }
 
-  // ---------- QUICK MINI GAME (old simple square) ----------
-  let quickCanvas, quickCtx, qx=140, qy=140, qsize=20;
-  function startQuickGame(){
-    // create small inline canvas if not exists
-    if(!quickCanvas){
-      quickCanvas = document.createElement('canvas');
-      quickCanvas.width = 300; quickCanvas.height = 300;
-      quickCanvas.style.border = '3px solid rgba(255,255,255,0.08)';
-      quickCanvas.style.borderRadius = '10px';
-      quickCtx = quickCanvas.getContext('2d');
-      document.getElementById('fun').appendChild(quickCanvas);
-      qx=140; qy=140;
-      window.addEventListener('keydown', quickKey);
-      requestAnimationFrame(drawQuick);
+    function halago() {
+      salida.textContent = halagosNormales[Math.floor(Math.random() * halagosNormales.length)];
     }
-  }
-  function drawQuick(){
-    if(!quickCtx) return;
-    quickCtx.clearRect(0,0,quickCanvas.width,quickCanvas.height);
-    quickCtx.fillStyle = '#4cafef';
-    quickCtx.fillRect(qx,qy,qsize,qsize);
-    requestAnimationFrame(drawQuick);
-  }
-  function quickKey(e){
-    switch(e.key){
-      case 'ArrowUp': qy = Math.max(0,qy-10); break;
-      case 'ArrowDown': qy = Math.min(quickCanvas.height-qsize,qy+10); break;
-      case 'ArrowLeft': qx = Math.max(0,qx-10); break;
-      case 'ArrowRight': qx = Math.min(quickCanvas.width-qsize,qx+10); break;
+
+    function reto() {
+      salida.textContent = retos[Math.floor(Math.random() * retos.length)];
     }
-  }
 
-  // ---------- SantiGame (main game) ----------
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  const gridSize = 20; // movement granularity
-  let player = { x: 200, y: 200, size: 22, speed: gridSize };
-  let gold = [];
-  let score = 0;
-  let gameRunning = false;
-  const maxGold = 5; // how many gold points on screen
-  const gameMsg = document.getElementById('gameMsg');
-  const scoreEl = document.getElementById('score');
-
-  function spawnGold(){
-    // spawn a gold point at grid-aligned position, avoiding player overlap
-    let tries = 0;
-    while(tries < 100){
-      const gx = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize + 2;
-      const gy = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize + 2;
-      const size = 14;
-      // ensure not overlapping player
-      if(Math.abs(gx - player.x) > 40 && Math.abs(gy - player.y) > 40){
-        gold.push({ x: gx, y: gy, size: size });
-        break;
+    function adivina() {
+      const numero = Math.floor(Math.random() * 10) + 1;
+      let intento = prompt("Adiviná el número (del 1 al 10):");
+      if (parseInt(intento) === numero) {
+        salida.textContent = `🔥 Correcto Santi! El número era ${numero} 🔥`;
+      } else {
+        salida.textContent = `😢 Nope, el número era ${numero}`;
       }
-      tries++;
-    }
-  }
-
-  function ensureGold(){
-    while(gold.length < maxGold) spawnGold();
-  }
-
-  function resetGame(){
-    player = { x: 200, y: 200, size: 22, speed: gridSize };
-    gold = [];
-    score = 0;
-    scoreEl.textContent = 'Puntaje: 0';
-    gameMsg.textContent = '';
-    ensureGold();
-  }
-
-  // halagos usados en el juego
-  const gameHalagos = [
-    "Santi, sos un crack 😎",
-    "Tu facha no tiene rival 💥",
-    "Sos la mejor compañía, siempre 🔥",
-    "Eres pura energía positiva ✨",
-    "Nadie tiene tu flow 🎶",
-    "Santi, genio absoluto 💯"
-  ];
-
-  function drawGame(){
-    // clear
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // background pattern subtle
-    ctx.fillStyle = '#151515';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    // draw gold points
-    for(const g of gold){
-      // glowing effect
-      ctx.beginPath();
-      ctx.fillStyle = 'rgba(255,215,0,0.18)';
-      ctx.rect(g.x-6, g.y-6, g.size+12, g.size+12);
-      ctx.fill();
-      ctx.closePath();
-
-      ctx.beginPath();
-      ctx.fillStyle = 'gold';
-      ctx.arc(g.x + g.size/2, g.y + g.size/2, g.size/2, 0, Math.PI*2);
-      ctx.fill();
-      ctx.closePath();
     }
 
-    // draw player
-    ctx.fillStyle = '#4cafef';
-    ctx.fillRect(player.x, player.y, player.size, player.size);
+    function confetti() {
+      salida.textContent = "🎉 BOOM! Confetti por todos lados 🎉";
+      for (let i=0; i<30; i++) {
+        let conf = document.createElement("div");
+        conf.textContent = "✨";
+        conf.style.position = "fixed";
+        conf.style.left = Math.random()*100 + "vw";
+        conf.style.top = "-10px";
+        conf.style.fontSize = "20px";
+        conf.style.animation = `fall ${Math.random()*2+2}s linear forwards`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 4000);
+      }
+    }
 
-    // collision detection
-    for(let i = gold.length - 1; i >= 0; i--){
-      const g = gold[i];
-      if(rectsOverlap(player.x, player.y, player.size, player.size, g.x, g.y, g.size, g.size)){
-        // collect
-        gold.splice(i,1);
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes fall {
+        to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,"0");
+      const m = String(now.getMinutes()).padStart(2,"0");
+      const s = String(now.getSeconds()).padStart(2,"0");
+      document.getElementById("clock").textContent = `⌚ Hora actual: ${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ====== JUEGO SANTIGAME ======
+    let player, point, score, jugando = false;
+
+    const halagosJuego = [
+      "Santi, sos un crack 😎",
+      "Tu nivel de facha está en modo DIOS 💥",
+      "Sos más capo que Goku en SSJ 💛",
+      "Bro, hacés que todo sea más divertido 🎉",
+      "Santi, nadie te gana en buena onda 🔥",
+      "Tenés más flow que Bad Bunny en verano 🎶"
+    ];
+
+    function iniciarJuego() {
+      document.getElementById("menuArea").style.display = "none";
+      document.getElementById("gameArea").style.display = "block";
+
+      // Reset
+      score = 0;
+      player = { x: 200, y: 200, size: 20, speed: 20 };
+      point = spawnPoint();
+      jugando = true;
+      scoreEl.textContent = "Puntaje: 0";
+
+      draw();
+    }
+
+    function salirJuego() {
+      jugando = false;
+      document.getElementById("menuArea").style.display = "block";
+      document.getElementById("gameArea").style.display = "none";
+    }
+
+    function spawnPoint() {
+      return {
+        x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
+        y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
+        size: 15
+      };
+    }
+
+    function draw() {
+      if (!jugando) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Jugador
+      ctx.fillStyle = "#4cafef";
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+
+      // Punto dorado
+      ctx.fillStyle = "gold";
+      ctx.beginPath();
+      ctx.arc(point.x + point.size/2, point.y + point.size/2, point.size/2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Colisión
+      if (
+        player.x < point.x + point.size &&
+        player.x + player.size > point.x &&
+        player.y < point.y + point.size &&
+        player.y + player.size > point.y
+      ) {
         score++;
-        scoreEl.textContent = 'Puntaje: ' + score;
-        // show halago
-        const h = rand(gameHalagos);
-        gameMsg.textContent = h;
-        // tiny confetti burst
-        miniConfettiAt(g.x + 10, g.y + 10);
+        scoreEl.textContent = "Puntaje: " + score;
+        salidaJuego.textContent = halagosJuego[Math.floor(Math.random() * halagosJuego.length)];
+        point = spawnPoint();
       }
+
+      requestAnimationFrame(draw);
     }
 
-    // ensure gold present
-    ensureGold();
-
-    if(gameRunning) requestAnimationFrame(drawGame);
-  }
-
-  function rectsOverlap(x1,y1,w1,h1,x2,y2,w2,h2){
-    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
-  }
-
-  // keyboard
-  window.addEventListener('keydown', e=>{
-    if(!gameRunning) return;
-    switch(e.key){
-      case 'ArrowUp': if(player.y > 0) player.y -= player.speed; break;
-      case 'ArrowDown': if(player.y < canvas.height - player.size) player.y += player.speed; break;
-      case 'ArrowLeft': if(player.x > 0) player.x -= player.speed; break;
-      case 'ArrowRight': if(player.x < canvas.width - player.size) player.x += player.speed; break;
-    }
-  });
-
-  function openSantiGame(){
-    // show section and start game loop
-    goTo('santigame');
-    resetGame();
-    gameRunning = true;
-    if(typeof drawGameFrame === 'undefined') requestAnimationFrame(drawGame);
-    // ensure drawGame runs (we use drawGame's own loop)
-    drawGame();
-  }
-
-  function miniConfettiAt(px,py){
-    // small localized confetti emojis
-    for(let i=0;i<12;i++){
-      const e = document.createElement('div');
-      e.className='confetti-emoji';
-      e.textContent = ["✨","🎉","🌟","💥"][Math.floor(Math.random()*4)];
-      e.style.left = (canvas.getBoundingClientRect().left + px + (Math.random()*40-20)) + 'px';
-      e.style.top = (canvas.getBoundingClientRect().top + py + (Math.random()*10-10)) + 'px';
-      e.style.fontSize = (10 + Math.random()*20) + 'px';
-      document.body.appendChild(e);
-      const dur = 700 + Math.random()*600;
-      e.animate([{ transform: 'translateY(0) rotate(0deg)', opacity:1 },{ transform: `translateY(${50 + Math.random()*60}px) rotate(360deg)`, opacity:0 }], { duration: dur, easing:'ease-out' });
-      setTimeout(()=>e.remove(), dur+50);
-    }
-  }
-
-  // ensure gold spawns initially for when user opens
-  ensureGold();
-
-  // stop game Loop when leaving section
-  // detect if visible
-  const observer = new IntersectionObserver(entries=>{
-    for(const ent of entries){
-      const id = ent.target.id;
-      if(id === 'santigame'){
-        if(ent.isIntersecting){
-          // if user scrolled back to game, keep running
-          if(gameRunning) return;
-        } else {
-          // paused
-          gameRunning = false;
-        }
+    document.addEventListener("keydown", e => {
+      if (!jugando) return;
+      switch(e.key) {
+        case "ArrowUp": if (player.y > 0) player.y -= player.speed; break;
+        case "ArrowDown": if (player.y < canvas.height - player.size) player.y += player.speed; break;
+        case "ArrowLeft": if (player.x > 0) player.x -= player.speed; break;
+        case "ArrowRight": if (player.x < canvas.width - player.size) player.x += player.speed; break;
       }
-    }
-  }, { threshold: 0.2 });
-  observer.observe(document.getElementById('santigame'));
-
-  // ---------- PAINT QUICK (extra small) ----------
-  function showPaint(){
-    const area = document.getElementById('extraArea');
-    area.innerHTML = '';
-    const el = document.createElement('div');
-    el.style.padding = '12px';
-    el.style.background = 'rgba(0,0,0,0.25)';
-    el.style.borderRadius = '10px';
-    el.innerHTML = '<div style="margin-bottom:8px">Mini Paint: dibujá con el mouse</div>';
-    const c = document.createElement('canvas');
-    c.width = 360; c.height = 220; c.style.border='2px solid rgba(255,255,255,0.06)'; c.style.borderRadius='8px';
-    el.appendChild(c);
-    area.appendChild(el);
-    const ct = c.getContext('2d');
-    let painting=false;
-    ct.fillStyle = '#fff'; ct.fillRect(0,0,c.width,c.height);
-    ct.strokeStyle = '#000';
-    ct.lineWidth = 6;
-    function pos(ev){
-      const r = c.getBoundingClientRect(); const x = ev.clientX - r.left; const y = ev.clientY - r.top; return {x,y};
-    }
-    c.addEventListener('mousedown', e=>{ painting=true; const p = pos(e); ct.beginPath(); ct.moveTo(p.x,p.y); });
-    window.addEventListener('mousemove', e=>{ if(!painting) return; const p = pos(e); ct.lineTo(p.x,p.y); ct.stroke(); });
-    window.addEventListener('mouseup', ()=>{ if(painting) painting=false; });
-  }
-
-  // initialize: show home and set menu state properly
-  document.querySelectorAll('.menu-btn').forEach(b=>{
-    if(b.dataset.target === 'home') b.classList.add('active');
-    else b.classList.remove('active');
-  });
-
-  // expose some functions to global (so onclick works)
-  window.chiste = chiste;
-  window.halago = halago;
-  window.reto = reto;
-  window.adivina = adivina;
-  window.confetti = confetti;
-  window.startQuickGame = startQuickGame;
-  window.showPaint = showPaint;
-  window.openSantiGame = openSantiGame;
-  window.resetGame = resetGame;
-  window.goTo = goTo;
-
-  // small UX: clicking SantiGame menu activates and focuses
-  document.querySelector('button[data-target="santigame"]').addEventListener('click', ()=>{ openSantiGame(); });
-</script>
+    });
+  </script>
 </body>
 </html>
